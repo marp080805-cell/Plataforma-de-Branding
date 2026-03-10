@@ -63,6 +63,9 @@ else
   echo -e "${YELLOW}Exemplo: meusite.com.br  ou  123.45.67.89${NC}"
   read -rp "→ " PUBLIC_HOST
 
+  # Remove protocolo se o usuário digitou (ex: https://meusite.com → meusite.com)
+  PUBLIC_HOST=$(echo "$PUBLIC_HOST" | sed 's|^https://||' | sed 's|^http://||' | sed 's|/$||')
+
   if [[ "$PUBLIC_HOST" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     PUBLIC_URL="http://${PUBLIC_HOST}"
   else
@@ -123,7 +126,7 @@ MAX_WAIT=120
 WAITED=0
 printf "Aguardando"
 while [ $WAITED -lt $MAX_WAIT ]; do
-  if curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
+  if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
     break
   fi
   printf "."
@@ -132,7 +135,7 @@ while [ $WAITED -lt $MAX_WAIT ]; do
 done
 echo ""
 
-if curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
+if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
   echo -e "${GREEN}✓ Aplicação respondendo${NC}"
 else
   echo -e "${YELLOW}⚠ Aplicação demorando mais que o esperado.${NC}"
@@ -153,7 +156,7 @@ p.user.count().then(c => { console.log(c); p.\$disconnect(); }).catch(() => { co
 SEED_CHECK=$(echo "$SEED_CHECK" | tr -d '[:space:]')
 
 if [ "$SEED_CHECK" = "0" ] || [ -z "$SEED_CHECK" ]; then
-  docker compose exec -T app npx tsx prisma/seed.ts
+  docker compose exec -T app node prisma/seed.js
   echo -e "${GREEN}✓ Banco populado com sucesso${NC}"
 else
   echo -e "${YELLOW}⚠ Banco já possui dados. Seed pulado.${NC}"
