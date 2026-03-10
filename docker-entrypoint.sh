@@ -20,7 +20,7 @@ run_migrations() {
   MIGRATE_URL="$(get_migrate_url)"
   ATTEMPTS=0
   MAX=3
-  until DATABASE_URL="$MIGRATE_URL" node ./node_modules/prisma/build/index.js migrate deploy; do
+  until timeout 30 sh -c "DATABASE_URL=\"$MIGRATE_URL\" node ./node_modules/prisma/build/index.js migrate deploy"; do
     ATTEMPTS=$((ATTEMPTS + 1))
     if [ "$ATTEMPTS" -ge "$MAX" ]; then
       echo "WARN: Migrations falharam após $MAX tentativas. Continuando sem migrations..."
