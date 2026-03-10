@@ -20,6 +20,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN apk add --no-cache openssl ca-certificates
 
+# Force IPv4 preference (containers may lack IPv6 routing)
+RUN echo 'precedence ::ffff:0:0/96 100' >> /etc/gai.conf
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
