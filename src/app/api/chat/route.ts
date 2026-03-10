@@ -138,22 +138,42 @@ export async function POST(req: NextRequest) {
         } else if (conversation.agent.provider === 'openai') {
           const openai = new OpenAI({ apiKey });
 
-          const openaiStream = await openai.chat.completions.create({
-            model: conversation.agent.model,
-            temperature: conversation.agent.temperature,
-            max_tokens: conversation.agent.maxTokens,
-            stream: true,
-            messages: [
-              { role: 'system', content: finalSystemPrompt },
-              ...history,
-            ],
-          });
+          // Models that require the Responses API instead of Chat Completions
+          const responsesApiModels = ['gpt-5.4-pro'];
+          const useResponsesApi = responsesApiModels.includes(conversation.agent.model);
 
-          for await (const chunk of openaiStream) {
-            const content = chunk.choices[0]?.delta?.content || '';
-            if (content) {
-              fullResponse += content;
-              send(content);
+          if (useResponsesApi) {
+            const responsesStream = await openai.responses.create({
+              model: conversation.agent.model,
+              instructions: finalSystemPrompt,
+              input: history,
+              stream: true,
+            });
+
+            for await (const event of responsesStream) {
+              if (event.type === 'response.output_text.delta') {
+                fullResponse += event.delta;
+                send(event.delta);
+              }
+            }
+          } else {
+            const openaiStream = await openai.chat.completions.create({
+              model: conversation.agent.model,
+              temperature: conversation.agent.temperature,
+              max_tokens: conversation.agent.maxTokens,
+              stream: true,
+              messages: [
+                { role: 'system', content: finalSystemPrompt },
+                ...history,
+              ],
+            });
+
+            for await (const chunk of openaiStream) {
+              const content = chunk.choices[0]?.delta?.content || '';
+              if (content) {
+                fullResponse += content;
+                send(content);
+              }
             }
           }
         }
