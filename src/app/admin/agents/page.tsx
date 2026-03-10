@@ -46,14 +46,15 @@ const MODELS: Record<string, { id: string; label: string }[]> = {
     { id: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4' },
   ],
   openai: [
-    { id: 'gpt-4.1', label: 'GPT-4.1 (recomendado)' },
-    { id: 'gpt-4.1-mini', label: 'GPT-4.1 Mini (rápido)' },
-    { id: 'gpt-4.1-nano', label: 'GPT-4.1 Nano (mais rápido)' },
+    { id: 'gpt-5.4', label: 'GPT-5.4 (mais poderoso)' },
+    { id: 'gpt-5.4-pro', label: 'GPT-5.4 Pro (máxima performance)' },
+    { id: 'gpt-5', label: 'GPT-5' },
+    { id: 'gpt-5-mini', label: 'GPT-5 Mini' },
+    { id: 'gpt-5-nano', label: 'GPT-5 Nano (mais rápido)' },
+    { id: 'gpt-4.1', label: 'GPT-4.1' },
+    { id: 'gpt-4.1-mini', label: 'GPT-4.1 Mini' },
     { id: 'gpt-4o', label: 'GPT-4o' },
     { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { id: 'o3', label: 'o3 (raciocínio avançado)' },
-    { id: 'o4-mini', label: 'o4 Mini (raciocínio rápido)' },
-    { id: 'o1', label: 'o1' },
   ],
 };
 
