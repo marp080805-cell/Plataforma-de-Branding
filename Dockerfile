@@ -37,9 +37,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modu
 
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 
+COPY --chown=nextjs:nodejs docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy && node prisma/seed.js && node server.js"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
