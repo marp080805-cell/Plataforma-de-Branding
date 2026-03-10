@@ -7,41 +7,126 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-// OCR_MODEL: Sonnet 4.6 escolhido intencionalmente sobre Haiku —
-// a extração acontece uma única vez por documento e fica permanente no banco.
-// Precisão > economia aqui: layouts complexos, tabelas e scans de baixa qualidade
-// exigem um modelo mais capaz.
-const OCR_MODEL = 'claude-sonnet-4-6';
+// Modelos escolhidos por custo-benefício:
+// PDFs  → claude-haiku-4-5 ($1/$5 MTok): único com suporte nativo a PDF, suficiente para OCR
+// Imagens → gpt-4o-mini ($0.15/$0.60 MTok): 7x mais barato que Haiku, excelente para OCR visual
+//           Fallback: claude-haiku-4-5 se OpenAI não estiver configurada
+const PDF_OCR_MODEL = 'claude-haiku-4-5-20251001';
+const IMAGE_OCR_MODEL = 'gpt-4o-mini';
 
-async function getAnthropicClient(): Promise<Anthropic | null> {
+async function getSettings() {
+  return prisma.settings.findUnique({ where: { id: 'global' } });
+}
+
+async function ocrPdfWithClaude(buffer: Buffer): Promise<string> {
+  const settings = await getSettings();
+  if (!settings?.anthropicApiKey) return '';
   try {
-    const settings = await prisma.settings.findUnique({ where: { id: 'global' } });
-    if (!settings?.anthropicApiKey) return null;
-    return new Anthropic({ apiKey: decrypt(settings.anthropicApiKey) });
-  } catch {
-    return null;
+    const anthropic = new Anthropic({ apiKey: decrypt(settings.anthropicApiKey) });
+    const response = await anthropic.messages.create({
+      model: PDF_OCR_MODEL,
+      max_tokens: 8192,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: { type: 'base64', media_type: 'application/pdf', data: buffer.toString('base64') },
+            },
+            {
+              type: 'text',
+              text: 'Extraia e retorne TODO o conteúdo textual deste documento PDF. Preserve a estrutura (títulos, listas, tabelas). Retorne apenas o texto extraído, sem comentários.',
+            },
+          ],
+        },
+      ],
+    });
+    const block = response.content[0];
+    return block.type === 'text' ? block.text : '';
+  } catch (err) {
+    console.error('Claude PDF OCR error:', err);
+    return '';
   }
 }
 
-async function extractTextWithVision(
-  anthropic: Anthropic,
-  content: Anthropic.MessageParam['content']
-): Promise<string> {
-  const response = await anthropic.messages.create({
-    model: OCR_MODEL,
-    max_tokens: 8192,
-    messages: [{ role: 'user', content }],
-  });
-  const block = response.content[0];
-  return block.type === 'text' ? block.text : '';
+async function ocrImageWithOpenAI(buffer: Buffer, mimeType: string): Promise<string> {
+  const settings = await getSettings();
+  if (!settings?.openaiApiKey) return '';
+  try {
+    const openai = new OpenAI({ apiKey: decrypt(settings.openaiApiKey) });
+    const base64 = buffer.toString('base64');
+    const response = await openai.chat.completions.create({
+      model: IMAGE_OCR_MODEL,
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: { url: `data:${mimeType};base64,${base64}`, detail: 'high' },
+            },
+            {
+              type: 'text',
+              text: 'Extraia e descreva todo o conteúdo textual e visual relevante desta imagem. Inclua textos, títulos, legendas, dados de tabelas e qualquer informação visível. Retorne apenas o conteúdo extraído, sem comentários.',
+            },
+          ],
+        },
+      ],
+    });
+    return response.choices[0]?.message?.content ?? '';
+  } catch (err) {
+    console.error('OpenAI image OCR error:', err);
+    return '';
+  }
+}
+
+async function ocrImageWithClaude(buffer: Buffer, mimeType: string): Promise<string> {
+  const settings = await getSettings();
+  if (!settings?.anthropicApiKey) return '';
+  try {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const mediaType = validTypes.includes(mimeType) ? mimeType : 'image/jpeg';
+    const anthropic = new Anthropic({ apiKey: decrypt(settings.anthropicApiKey) });
+    const response = await anthropic.messages.create({
+      model: PDF_OCR_MODEL,
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+                data: buffer.toString('base64'),
+              },
+            },
+            {
+              type: 'text',
+              text: 'Extraia e descreva todo o conteúdo textual e visual relevante desta imagem. Inclua textos, títulos, legendas, dados de tabelas e qualquer informação visível. Retorne apenas o conteúdo extraído, sem comentários.',
+            },
+          ],
+        },
+      ],
+    });
+    const block = response.content[0];
+    return block.type === 'text' ? block.text : '';
+  } catch (err) {
+    console.error('Claude image OCR error:', err);
+    return '';
+  }
 }
 
 async function extractText(buffer: Buffer, mimeType: string, filename: string): Promise<string> {
   try {
     // --- PDF ---
     if (mimeType === 'application/pdf') {
-      // Tenta extração direta (PDFs com camada de texto — rápido, sem custo de API)
+      // Tenta extração direta (PDFs com camada de texto — grátis, sem API)
       try {
         const pdfParse = (await import('pdf-parse')).default;
         const data = await pdfParse(buffer);
@@ -50,20 +135,8 @@ async function extractText(buffer: Buffer, mimeType: string, filename: string): 
       } catch (err) {
         console.error('pdf-parse error:', err);
       }
-
-      // Fallback: Claude Vision para PDFs escaneados/baseados em imagem
-      const anthropic = await getAnthropicClient();
-      if (!anthropic) return '';
-      return await extractTextWithVision(anthropic, [
-        {
-          type: 'document',
-          source: { type: 'base64', media_type: 'application/pdf', data: buffer.toString('base64') },
-        },
-        {
-          type: 'text',
-          text: 'Extraia e retorne TODO o conteúdo textual deste documento PDF. Preserve a estrutura (títulos, listas, tabelas). Retorne apenas o texto extraído, sem comentários.',
-        },
-      ]);
+      // Fallback OCR: Claude Haiku (único modelo com suporte nativo a PDF)
+      return await ocrPdfWithClaude(buffer);
     }
 
     // --- DOCX ---
@@ -82,26 +155,11 @@ async function extractText(buffer: Buffer, mimeType: string, filename: string): 
     }
 
     // --- Imagens (PNG, JPG, WEBP, GIF) ---
+    // Tenta OpenAI gpt-4o-mini primeiro (mais barato), depois Claude Haiku como fallback
     if (mimeType.startsWith('image/')) {
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      const mediaType = validTypes.includes(mimeType) ? mimeType : 'image/jpeg';
-
-      const anthropic = await getAnthropicClient();
-      if (!anthropic) return '';
-      return await extractTextWithVision(anthropic, [
-        {
-          type: 'image',
-          source: {
-            type: 'base64',
-            media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
-            data: buffer.toString('base64'),
-          },
-        },
-        {
-          type: 'text',
-          text: 'Extraia e descreva todo o conteúdo textual e visual relevante desta imagem. Inclua textos, títulos, legendas, dados de tabelas e qualquer informação visível. Retorne apenas o conteúdo extraído, sem comentários.',
-        },
-      ]);
+      const text = await ocrImageWithOpenAI(buffer, mimeType);
+      if (text) return text;
+      return await ocrImageWithClaude(buffer, mimeType);
     }
   } catch (err) {
     console.error('Text extraction error:', err);
@@ -113,7 +171,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // Verify project ownership
   const project = await prisma.project.findFirst({
     where: { id: params.id, userId: session.user.id },
   });
@@ -124,7 +181,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
-  // 20MB limit
   if (file.size > 20 * 1024 * 1024) {
     return NextResponse.json({ error: 'File too large (max 20MB)' }, { status: 400 });
   }
@@ -133,12 +189,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const ext = file.name.split('.').pop() || '';
   const filename = `${randomUUID()}.${ext}`;
 
-  // Save file
   const uploadDir = join('/app/uploads', params.id);
   await mkdir(uploadDir, { recursive: true });
   await writeFile(join(uploadDir, filename), buffer);
 
-  // Extract text
   const extractedText = await extractText(buffer, file.type, file.name);
 
   const document = await prisma.document.create({
