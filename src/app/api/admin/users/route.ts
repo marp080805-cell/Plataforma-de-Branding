@@ -23,6 +23,7 @@ export async function GET() {
       avatarColor: true,
       isActive: true,
       createdAt: true,
+      _count: { select: { projects: true } },
     },
     orderBy: { createdAt: 'asc' },
   });

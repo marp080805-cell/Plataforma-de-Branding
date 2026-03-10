@@ -7,8 +7,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const isAdmin = session.user.role === 'admin';
+
   const project = await prisma.project.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
     include: {
       documents: { orderBy: { createdAt: 'desc' } },
     },
@@ -23,10 +25,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const isAdmin = session.user.role === 'admin';
   const { name, description, color } = await req.json();
 
   const project = await prisma.project.updateMany({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
     data: { name, description, color },
   });
 
@@ -38,6 +41,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const isAdmin = session.user.role === 'admin';
 
   // Delete uploaded files
   const documents = await prisma.document.findMany({ where: { projectId: params.id } });
@@ -58,7 +63,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   } catch {}
 
   const deleted = await prisma.project.deleteMany({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
   });
 
   if (deleted.count === 0) return NextResponse.json({ error: 'Project not found' }, { status: 404 });

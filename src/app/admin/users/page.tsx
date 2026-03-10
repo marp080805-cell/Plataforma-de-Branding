@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Loader2, Trash2, UserCheck, UserX } from 'lucide-react';
+import { Plus, Loader2, Trash2, UserCheck, UserX, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +21,16 @@ interface User {
   avatarColor: string;
   isActive: boolean;
   createdAt: string;
+  _count?: { projects: number };
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  updatedAt: string;
+  _count: { documents: number; conversations: number };
 }
 
 const AVATAR_COLORS = [
@@ -36,6 +46,9 @@ export default function AdminUsersPage() {
   const [editing, setEditing] = useState<User | null>(null);
   const [showDelete, setShowDelete] = useState<User | null>(null);
   const [saving, setSaving] = useState(false);
+  const [viewingProjects, setViewingProjects] = useState<User | null>(null);
+  const [userProjects, setUserProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', password: '', role: 'strategist', avatarColor: '#6366f1',
   });
@@ -91,6 +104,15 @@ export default function AdminUsersPage() {
     fetchUsers();
   };
 
+  const openProjects = async (user: User) => {
+    setViewingProjects(user);
+    setLoadingProjects(true);
+    const res = await fetch(`/api/projects?userId=${user.id}`);
+    const data = await res.json();
+    setUserProjects(data);
+    setLoadingProjects(false);
+  };
+
   const handleDelete = async () => {
     if (!showDelete) return;
     await fetch(`/api/admin/users/${showDelete.id}`, { method: 'DELETE' });
@@ -123,6 +145,7 @@ export default function AdminUsersPage() {
                 <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Usuário</th>
                 <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Email</th>
                 <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Perfil</th>
+                <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Projetos</th>
                 <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Status</th>
                 <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Criado</th>
                 <th className="text-right text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Ações</th>
@@ -147,6 +170,15 @@ export default function AdminUsersPage() {
                     <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                       {user.role === 'admin' ? 'Admin' : 'Estrategista'}
                     </Badge>
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => openProjects(user)}
+                      className="flex items-center gap-1.5 text-sm text-[#7070a0] hover:text-[#7c6ef5] transition-colors"
+                    >
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      {user._count?.projects ?? 0}
+                    </button>
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant={user.isActive ? 'openai' : 'destructive'}>
@@ -241,6 +273,45 @@ export default function AdminUsersPage() {
               {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               {editing ? 'Salvar' : 'Criar Usuário'}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Projects modal */}
+      <Dialog open={!!viewingProjects} onOpenChange={() => setViewingProjects(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Projetos de {viewingProjects?.name}
+            </DialogTitle>
+          </DialogHeader>
+          {loadingProjects ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-[#7c6ef5]" />
+            </div>
+          ) : userProjects.length === 0 ? (
+            <p className="text-[#505070] text-sm text-center py-8">Nenhum projeto criado.</p>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+              {userProjects.map((project) => (
+                <div key={project.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: project.color }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[#c8c8e8] truncate">{project.name}</p>
+                    {project.description && (
+                      <p className="text-xs text-[#505070] truncate">{project.description}</p>
+                    )}
+                  </div>
+                  <div className="text-xs text-[#404060] flex-shrink-0 text-right">
+                    <div>{project._count.documents} doc{project._count.documents !== 1 ? 's' : ''}</div>
+                    <div>{project._count.conversations} conv</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewingProjects(null)}>Fechar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
