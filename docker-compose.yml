@@ -12,6 +12,9 @@ services:
       - uploads_data:/app/uploads
     ports:
       - "127.0.0.1:3001:3000"
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
       interval: 30s
