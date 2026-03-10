@@ -100,12 +100,15 @@ export function ChatClient({
   }, [messages, streamingContent]);
 
   const fetchMessages = async () => {
-    const res = await fetch(
-      `/api/projects/${project.id}/agents/${agent.id}/conversation`
-    );
-    const data = await res.json();
-    setMessages(data.messages || []);
-    setSelectedDocIds(data.documents?.map((d: { documentId: string }) => d.documentId) || initialSelectedIds);
+    try {
+      const res = await fetch(
+        `/api/projects/${project.id}/agents/${agent.id}/conversation`
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      setMessages(data.messages || []);
+      setSelectedDocIds(data.documents?.map((d: { documentId: string }) => d.documentId) || initialSelectedIds);
+    } catch {}
   };
 
   const saveDocSelection = useCallback(
@@ -168,8 +171,14 @@ export function ChatClient({
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Erro ao enviar mensagem');
+        let errorMsg = 'Erro ao enviar mensagem';
+        try {
+          const data = await res.json();
+          errorMsg = data.error || errorMsg;
+        } catch {
+          errorMsg = await res.text().catch(() => errorMsg);
+        }
+        throw new Error(errorMsg);
       }
 
       const reader = res.body!.getReader();

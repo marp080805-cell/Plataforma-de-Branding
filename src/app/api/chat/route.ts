@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (!conversation) return new Response('Conversation not found', { status: 404 });
+  if (!conversation) return new Response(JSON.stringify({ error: 'Conversation not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
 
   // Verify project ownership
   if (conversation.project.userId !== session.user.id) {
