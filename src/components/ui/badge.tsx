@@ -3,16 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-indigo-100 text-indigo-700',
-        secondary: 'border-transparent bg-zinc-100 text-zinc-700',
-        destructive: 'border-transparent bg-rose-100 text-rose-700',
-        outline: 'text-zinc-700 border-zinc-200',
-        anthropic: 'border-transparent bg-amber-100 text-amber-700',
-        openai: 'border-transparent bg-emerald-100 text-emerald-700',
+        default: 'bg-[#7c6ef5]/[0.15] text-[#a898ff] border border-[#7c6ef5]/[0.25]',
+        secondary: 'bg-white/[0.06] text-[#9090b0] border border-white/[0.08]',
+        destructive: 'bg-[#c93030]/[0.15] text-[#ff8080] border border-[#c93030]/[0.25]',
+        outline: 'text-[#9090b0] border border-white/[0.1]',
+        anthropic: 'bg-[#f59e0b]/[0.12] text-[#fbbf24] border border-[#f59e0b]/[0.2]',
+        openai: 'bg-[#10b981]/[0.12] text-[#34d399] border border-[#10b981]/[0.2]',
       },
     },
     defaultVariants: {

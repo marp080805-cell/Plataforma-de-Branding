@@ -34,9 +34,9 @@ interface Project {
 }
 
 const PRESET_COLORS = [
-  '#6366f1', '#8b5cf6', '#ec4899', '#ef4444',
-  '#f97316', '#eab308', '#22c55e', '#10b981',
-  '#06b6d4', '#3b82f6',
+  '#7c6ef5', '#9f7aea', '#e879f9', '#f472b6',
+  '#fb923c', '#facc15', '#4ade80', '#34d399',
+  '#22d3ee', '#60a5fa',
 ];
 
 export function DashboardClient() {
@@ -48,7 +48,7 @@ export function DashboardClient() {
   const [showDelete, setShowDelete] = useState<Project | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({ name: '', description: '', color: '#6366f1' });
+  const [form, setForm] = useState({ name: '', description: '', color: '#7c6ef5' });
 
   useEffect(() => {
     fetchProjects();
@@ -111,13 +111,13 @@ export function DashboardClient() {
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Seus Projetos</h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <h1 className="text-xl font-semibold text-[#e0e0f0] tracking-tight">Projetos</h1>
+          <p className="text-[#50506a] text-sm mt-0.5">
             {projects.length} {projects.length === 1 ? 'projeto' : 'projetos'}
           </p>
         </div>
-        <Button onClick={() => { setForm({ name: '', description: '', color: '#6366f1' }); setShowCreate(true); }}>
-          <Plus className="w-4 h-4 mr-2" />
+        <Button onClick={() => { setForm({ name: '', description: '', color: '#7c6ef5' }); setShowCreate(true); }}>
+          <Plus className="w-4 h-4 mr-1.5" />
           Novo Projeto
         </Button>
       </div>
@@ -125,7 +125,7 @@ export function DashboardClient() {
       {/* Search */}
       {projects.length > 0 && (
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#404060]" />
           <Input
             placeholder="Buscar projetos..."
             value={search}
@@ -137,56 +137,62 @@ export function DashboardClient() {
 
       {/* Projects Grid */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+        <div className="flex items-center justify-center py-24">
+          <Loader2 className="w-5 h-5 animate-spin text-[#7c6ef5]" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FolderOpen className="w-8 h-8 text-zinc-400" />
+        <div className="text-center py-24">
+          <div className="w-14 h-14 bg-white/[0.04] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FolderOpen className="w-6 h-6 text-[#404060]" />
           </div>
-          <h3 className="text-lg font-semibold text-zinc-900 mb-2">
-            {search ? 'Nenhum projeto encontrado' : 'Crie seu primeiro projeto'}
+          <h3 className="text-base font-medium text-[#c0c0d8] mb-1.5">
+            {search ? 'Nenhum projeto encontrado' : 'Nenhum projeto ainda'}
           </h3>
-          <p className="text-zinc-500 text-sm mb-6">
+          <p className="text-[#505070] text-sm mb-6 max-w-xs mx-auto">
             {search
               ? 'Tente buscar por outro nome'
-              : 'Organize seus clientes em projetos separados'}
+              : 'Organize seus clientes em projetos separados com agentes dedicados'}
           </p>
           {!search && (
             <Button onClick={() => setShowCreate(true)}>
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 mr-1.5" />
               Criar Projeto
             </Button>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((project) => (
             <div
               key={project.id}
-              className="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden hover:shadow-md transition-all duration-200 group"
+              className="bg-[#0f0f18] border border-white/[0.07] rounded-2xl overflow-hidden hover:border-white/[0.13] transition-all duration-300 group"
             >
-              {/* Color bar */}
-              <div className="h-2" style={{ backgroundColor: project.color }} />
+              {/* Color accent bar */}
+              <div className="h-[3px] opacity-80" style={{ backgroundColor: project.color }} />
 
               <div className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <Link href={`/projects/${project.id}`} className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors truncate">
-                      {project.name}
-                    </h3>
+                    <div className="flex items-center gap-2.5 mb-1.5">
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0 opacity-80"
+                        style={{ backgroundColor: project.color }}
+                      />
+                      <h3 className="font-medium text-[#d8d8f0] group-hover:text-[#e8e8ff] transition-colors truncate text-sm">
+                        {project.name}
+                      </h3>
+                    </div>
                     {project.description && (
-                      <p className="text-zinc-500 text-sm mt-1">
-                        {truncate(project.description, 80)}
+                      <p className="text-[#505070] text-xs leading-relaxed pl-4.5">
+                        {truncate(project.description, 75)}
                       </p>
                     )}
                   </Link>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1 rounded hover:bg-zinc-100 transition-colors opacity-0 group-hover:opacity-100">
-                        <MoreVertical className="w-4 h-4 text-zinc-500" />
+                      <button className="p-1.5 rounded-lg hover:bg-white/[0.07] transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">
+                        <MoreVertical className="w-3.5 h-3.5 text-[#606080]" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -195,7 +201,7 @@ export function DashboardClient() {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-rose-600"
+                        className="!text-[#ff7070] hover:!bg-[#c93030]/[0.12]"
                         onClick={() => setShowDelete(project)}
                       >
                         Excluir
@@ -204,13 +210,13 @@ export function DashboardClient() {
                   </DropdownMenu>
                 </div>
 
-                <div className="flex items-center gap-4 mt-4 text-xs text-zinc-500">
-                  <span className="flex items-center gap-1">
-                    <FileText className="w-3.5 h-3.5" />
-                    {project._count.documents} {project._count.documents === 1 ? 'documento' : 'documentos'}
+                <div className="flex items-center gap-4 mt-4 pt-3.5 border-t border-white/[0.05] text-xs text-[#48485e]">
+                  <span className="flex items-center gap-1.5">
+                    <FileText className="w-3 h-3" />
+                    {project._count.documents} {project._count.documents === 1 ? 'doc' : 'docs'}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3 h-3" />
                     {formatDate(project.updatedAt)}
                   </span>
                 </div>
@@ -228,7 +234,7 @@ export function DashboardClient() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Nome do projeto *</Label>
+              <Label className="text-[#8080a0] text-xs">Nome do projeto *</Label>
               <Input
                 placeholder="Ex: Marca XYZ"
                 value={form.name}
@@ -237,7 +243,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Descrição (opcional)</Label>
+              <Label className="text-[#8080a0] text-xs">Descrição (opcional)</Label>
               <Textarea
                 placeholder="Breve descrição do projeto..."
                 value={form.description}
@@ -245,17 +251,18 @@ export function DashboardClient() {
                 rows={3}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Cor</Label>
+            <div className="space-y-2">
+              <Label className="text-[#8080a0] text-xs">Cor de identificação</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
                     key={color}
-                    className="w-8 h-8 rounded-full border-2 transition-all duration-150"
+                    className="w-7 h-7 rounded-full transition-all duration-150 hover:scale-110"
                     style={{
                       backgroundColor: color,
-                      borderColor: form.color === color ? '#09090b' : 'transparent',
-                      transform: form.color === color ? 'scale(1.15)' : 'scale(1)',
+                      outline: form.color === color ? `2px solid ${color}` : 'none',
+                      outlineOffset: '2px',
+                      transform: form.color === color ? 'scale(1.1)' : undefined,
                     }}
                     onClick={() => setForm({ ...form, color })}
                   />
@@ -283,31 +290,32 @@ export function DashboardClient() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Nome do projeto *</Label>
+              <Label className="text-[#8080a0] text-xs">Nome do projeto *</Label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Descrição (opcional)</Label>
+              <Label className="text-[#8080a0] text-xs">Descrição (opcional)</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 rows={3}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>Cor</Label>
+            <div className="space-y-2">
+              <Label className="text-[#8080a0] text-xs">Cor de identificação</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
                     key={color}
-                    className="w-8 h-8 rounded-full border-2 transition-all duration-150"
+                    className="w-7 h-7 rounded-full transition-all duration-150 hover:scale-110"
                     style={{
                       backgroundColor: color,
-                      borderColor: form.color === color ? '#09090b' : 'transparent',
-                      transform: form.color === color ? 'scale(1.15)' : 'scale(1)',
+                      outline: form.color === color ? `2px solid ${color}` : 'none',
+                      outlineOffset: '2px',
+                      transform: form.color === color ? 'scale(1.1)' : undefined,
                     }}
                     onClick={() => setForm({ ...form, color })}
                   />
@@ -333,9 +341,9 @@ export function DashboardClient() {
           <DialogHeader>
             <DialogTitle>Excluir Projeto</DialogTitle>
           </DialogHeader>
-          <p className="text-zinc-600 text-sm">
-            Tem certeza que deseja excluir o projeto{' '}
-            <strong>"{showDelete?.name}"</strong>? Todos os documentos e conversas serão
+          <p className="text-[#7070a0] text-sm">
+            Tem certeza que deseja excluir{' '}
+            <span className="text-[#c0c0d8] font-medium">"{showDelete?.name}"</span>? Todos os documentos e conversas serão
             removidos permanentemente.
           </p>
           <DialogFooter>

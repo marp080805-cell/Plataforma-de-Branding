@@ -166,69 +166,69 @@ export default function AdminAgentsPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900">Agentes</h1>
-          <p className="text-zinc-500 text-sm">Configure os agentes de IA da plataforma</p>
+          <h1 className="text-lg font-semibold text-[#e0e0f0] tracking-tight">Agentes</h1>
+          <p className="text-[#505070] text-sm mt-0.5">Configure os agentes de IA da plataforma</p>
         </div>
         <Button onClick={openCreate}>
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4 mr-1.5" />
           Novo Agente
         </Button>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+          <Loader2 className="w-5 h-5 animate-spin text-[#7c6ef5]" />
         </div>
       ) : agents.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border border-zinc-200">
-          <Bot className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
-          <p className="text-zinc-500">Nenhum agente criado ainda.</p>
+        <div className="text-center py-20 bg-[#0f0f18] rounded-2xl border border-white/[0.07]">
+          <Bot className="w-7 h-7 text-[#303050] mx-auto mb-2" />
+          <p className="text-[#505070] text-sm">Nenhum agente criado ainda.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {agents.map((agent, idx) => {
             const Icon = ICON_COMPONENTS[agent.icon] || Bot;
             return (
               <div
                 key={agent.id}
-                className="bg-white rounded-xl border border-zinc-200 shadow-sm p-4 flex items-center gap-4"
+                className="bg-[#0f0f18] rounded-xl border border-white/[0.07] p-4 flex items-center gap-4 hover:border-white/[0.11] transition-colors"
               >
                 <div className="flex flex-col gap-0.5">
-                  <button onClick={() => moveAgent(agent.id, 'up')} disabled={idx === 0} className="p-0.5 text-zinc-300 hover:text-zinc-600 disabled:opacity-20">
-                    <ChevronUp className="w-4 h-4" />
+                  <button onClick={() => moveAgent(agent.id, 'up')} disabled={idx === 0} className="p-0.5 text-[#303050] hover:text-[#7070a0] disabled:opacity-20 transition-colors">
+                    <ChevronUp className="w-3.5 h-3.5" />
                   </button>
-                  <button onClick={() => moveAgent(agent.id, 'down')} disabled={idx === agents.length - 1} className="p-0.5 text-zinc-300 hover:text-zinc-600 disabled:opacity-20">
-                    <ChevronDown className="w-4 h-4" />
+                  <button onClick={() => moveAgent(agent.id, 'down')} disabled={idx === agents.length - 1} className="p-0.5 text-[#303050] hover:text-[#7070a0] disabled:opacity-20 transition-colors">
+                    <ChevronDown className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
-                  <Icon className="w-5 h-5" />
+                <div className="w-9 h-9 bg-[#7c6ef5]/[0.1] rounded-xl flex items-center justify-center text-[#9d90ff] border border-[#7c6ef5]/[0.15]">
+                  <Icon className="w-4 h-4" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-zinc-900 truncate">{agent.name}</h3>
+                    <h3 className="font-medium text-[#c8c8e8] truncate text-sm">{agent.name}</h3>
                     {!agent.isActive && (
-                      <Badge variant="secondary" className="text-xs">Inativo</Badge>
+                      <Badge variant="secondary">Inativo</Badge>
                     )}
                   </div>
-                  <p className="text-xs text-zinc-500 truncate">{agent.description}</p>
+                  <p className="text-xs text-[#505070] truncate mt-0.5">{agent.description}</p>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Badge variant={agent.provider === 'anthropic' ? 'anthropic' : 'openai'}>
                     {agent.provider === 'anthropic' ? 'Claude' : 'GPT'}
                   </Badge>
-                  <span className="text-xs text-zinc-400">{agent.model}</span>
+                  <span className="text-xs text-[#404060] hidden sm:block">{agent.model}</span>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   <Button variant="outline" size="sm" onClick={() => openEdit(agent)}>
                     Editar
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setShowDelete(agent)} className="text-rose-500 hover:text-rose-600 hover:bg-rose-50">
-                    <Trash2 className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" onClick={() => setShowDelete(agent)} className="text-[#404060] hover:text-[#ff7070] hover:bg-[#c93030]/[0.1]">
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
@@ -247,11 +247,11 @@ export default function AdminAgentsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Nome *</Label>
+                <Label className="text-[#8080a0] text-xs">Nome *</Label>
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ex: Estrategista de Branding" />
               </div>
               <div className="space-y-1.5">
-                <Label>Ícone</Label>
+                <Label className="text-[#8080a0] text-xs">Ícone</Label>
                 <Select value={form.icon} onValueChange={(v) => setForm({ ...form, icon: v })}>
                   <SelectTrigger>
                     <div className="flex items-center gap-2">
@@ -277,13 +277,13 @@ export default function AdminAgentsPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label>Descrição</Label>
+              <Label className="text-[#8080a0] text-xs">Descrição</Label>
               <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Breve descrição do que este agente faz" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Provider</Label>
+                <Label className="text-[#8080a0] text-xs">Provider</Label>
                 <Select value={form.provider} onValueChange={handleProviderChange}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -293,7 +293,7 @@ export default function AdminAgentsPage() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Modelo</Label>
+                <Label className="text-[#8080a0] text-xs">Modelo</Label>
                 <Select value={form.model} onValueChange={(v) => setForm({ ...form, model: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -306,7 +306,7 @@ export default function AdminAgentsPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label>Temperatura: {form.temperature.toFixed(1)}</Label>
+              <Label className="text-[#8080a0] text-xs">Temperatura: {form.temperature.toFixed(1)}</Label>
               <Slider
                 min={0}
                 max={1}
@@ -314,14 +314,14 @@ export default function AdminAgentsPage() {
                 value={[form.temperature]}
                 onValueChange={([v]) => setForm({ ...form, temperature: v })}
               />
-              <div className="flex justify-between text-xs text-zinc-400">
+              <div className="flex justify-between text-xs text-[#404060]">
                 <span>Mais preciso (0)</span>
                 <span>Mais criativo (1)</span>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label>Max Tokens</Label>
+              <Label className="text-[#8080a0] text-xs">Max Tokens</Label>
               <Input
                 type="number"
                 value={form.maxTokens}
@@ -332,7 +332,7 @@ export default function AdminAgentsPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label>System Prompt *</Label>
+              <Label className="text-[#8080a0] text-xs">System Prompt *</Label>
               <Textarea
                 value={form.systemPrompt}
                 onChange={(e) => setForm({ ...form, systemPrompt: e.target.value })}
@@ -347,7 +347,7 @@ export default function AdminAgentsPage() {
                 checked={form.isActive}
                 onCheckedChange={(v) => setForm({ ...form, isActive: v })}
               />
-              <Label>Agente ativo</Label>
+              <Label className="text-[#9090b0] text-sm">Agente ativo</Label>
             </div>
           </div>
 
@@ -367,8 +367,8 @@ export default function AdminAgentsPage() {
           <DialogHeader>
             <DialogTitle>Excluir Agente</DialogTitle>
           </DialogHeader>
-          <p className="text-zinc-600 text-sm">
-            Tem certeza que deseja excluir <strong>"{showDelete?.name}"</strong>? Todas as conversas com este agente serão removidas.
+          <p className="text-[#7070a0] text-sm">
+            Tem certeza que deseja excluir <span className="text-[#c0c0d8] font-medium">"{showDelete?.name}"</span>? Todas as conversas com este agente serão removidas.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDelete(null)}>Cancelar</Button>

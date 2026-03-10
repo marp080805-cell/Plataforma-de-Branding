@@ -41,7 +41,7 @@ export default async function AgentChatPage({
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col">
+    <div className="min-h-screen bg-[#080810] flex flex-col">
       <Header />
       <ChatClient
         project={project}

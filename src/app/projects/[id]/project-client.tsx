@@ -108,33 +108,33 @@ export function ProjectClient({ project, agents }: Props) {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-sm text-zinc-500 mb-6">
-        <Link href="/dashboard" className="hover:text-zinc-700 transition-colors">
+      <div className="flex items-center gap-1.5 text-xs text-[#404060] mb-6">
+        <Link href="/dashboard" className="hover:text-[#8080a0] transition-colors">
           Projetos
         </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="font-medium text-zinc-900">{project.name}</span>
+        <ChevronRight className="w-3 h-3" />
+        <span className="text-[#9090b0]">{project.name}</span>
       </div>
 
       {/* Project Header */}
       <div className="flex items-center gap-3 mb-8">
         <div
-          className="w-4 h-12 rounded-full"
+          className="w-1 h-10 rounded-full opacity-80"
           style={{ backgroundColor: project.color }}
         />
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">{project.name}</h1>
+          <h1 className="text-lg font-semibold text-[#e0e0f0] tracking-tight">{project.name}</h1>
           {project.description && (
-            <p className="text-zinc-500 text-sm mt-0.5">{project.description}</p>
+            <p className="text-[#505070] text-sm mt-0.5">{project.description}</p>
           )}
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Documents Section */}
-        <section className="bg-white rounded-xl border border-zinc-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-500" />
+        <section className="bg-[#0f0f18] rounded-2xl border border-white/[0.07] p-6">
+          <h2 className="text-sm font-semibold text-[#c0c0d8] mb-4 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#7c6ef5]" />
             Documentos da Marca
           </h2>
 
@@ -143,48 +143,48 @@ export function ProjectClient({ project, agents }: Props) {
             {...getRootProps()}
             className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 mb-4 ${
               isDragActive
-                ? 'border-indigo-400 bg-indigo-50'
-                : 'border-zinc-200 hover:border-indigo-300 hover:bg-zinc-50'
+                ? 'border-[#7c6ef5]/60 bg-[#7c6ef5]/[0.06]'
+                : 'border-white/[0.07] hover:border-[#7c6ef5]/30 hover:bg-white/[0.02]'
             }`}
           >
             <input {...getInputProps()} />
             <div className="flex flex-col items-center gap-2">
               {uploading ? (
-                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                <Loader2 className="w-7 h-7 text-[#7c6ef5] animate-spin" />
               ) : (
-                <Upload className="w-8 h-8 text-zinc-400" />
+                <Upload className="w-7 h-7 text-[#404060]" />
               )}
-              <p className="text-sm font-medium text-zinc-700">
+              <p className="text-sm font-medium text-[#9090b0]">
                 {isDragActive
                   ? 'Solte os arquivos aqui...'
                   : uploading
                   ? 'Enviando e extraindo texto...'
                   : 'Arraste arquivos ou clique para selecionar'}
               </p>
-              <p className="text-xs text-zinc-400">
-                PDF, DOCX, TXT, MD, PNG, JPG — máx. 20MB por arquivo
+              <p className="text-xs text-[#404058]">
+                PDF, DOCX, TXT, MD, PNG, JPG — máx. 20MB
               </p>
             </div>
           </div>
 
           {/* Document list */}
           {allDocs.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {allDocs.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-zinc-100 hover:bg-zinc-50 group transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.05] hover:bg-white/[0.03] group transition-colors"
                 >
                   {getFileIcon(doc.mimeType, doc.name)}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-zinc-800 truncate">{doc.name}</p>
-                    <p className="text-xs text-zinc-400">
-                      {formatBytes(doc.size)} • {formatDate(doc.createdAt)}
+                    <p className="text-sm font-medium text-[#c0c0d8] truncate">{doc.name}</p>
+                    <p className="text-xs text-[#404058]">
+                      {formatBytes(doc.size)} · {formatDate(doc.createdAt)}
                     </p>
                   </div>
                   <button
                     onClick={() => deleteDoc(doc.id)}
-                    className="p-1.5 rounded text-zinc-400 hover:text-rose-500 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100"
+                    className="p-1.5 rounded-lg text-[#404060] hover:text-[#ff7070] hover:bg-[#c93030]/[0.1] transition-all opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -192,7 +192,7 @@ export function ProjectClient({ project, agents }: Props) {
               ))}
             </div>
           ) : !uploading ? (
-            <p className="text-center text-sm text-zinc-400 py-4">
+            <p className="text-center text-xs text-[#404058] py-4">
               Nenhum documento ainda. Faça upload dos arquivos da marca.
             </p>
           ) : null}
@@ -200,44 +200,44 @@ export function ProjectClient({ project, agents }: Props) {
 
         {/* Agents Section */}
         <section>
-          <h2 className="text-lg font-semibold text-zinc-900 mb-4 flex items-center gap-2">
-            <Bot className="w-5 h-5 text-indigo-500" />
+          <h2 className="text-sm font-semibold text-[#c0c0d8] mb-4 flex items-center gap-2">
+            <Bot className="w-4 h-4 text-[#7c6ef5]" />
             Agentes Disponíveis
           </h2>
 
           {agents.length === 0 ? (
-            <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-8 text-center">
-              <Bot className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
-              <p className="text-zinc-500 text-sm">Nenhum agente configurado ainda.</p>
+            <div className="bg-[#0f0f18] rounded-2xl border border-white/[0.07] p-10 text-center">
+              <Bot className="w-7 h-7 text-[#303050] mx-auto mb-2" />
+              <p className="text-[#505070] text-sm">Nenhum agente configurado ainda.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {agents.map((agent) => (
                 <Link
                   key={agent.id}
                   href={`/projects/${project.id}/agents/${agent.id}`}
-                  className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 hover:shadow-md hover:border-indigo-200 transition-all duration-200 group"
+                  className="bg-[#0f0f18] rounded-2xl border border-white/[0.07] p-5 hover:border-[#7c6ef5]/30 hover:bg-[#7c6ef5]/[0.03] transition-all duration-200 group"
                 >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-100 transition-colors">
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="w-11 h-11 bg-[#7c6ef5]/[0.1] rounded-xl flex items-center justify-center text-[#9d90ff] group-hover:bg-[#7c6ef5]/[0.15] transition-colors border border-[#7c6ef5]/[0.15]">
                       {getAgentIcon(agent.icon)}
                     </div>
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-col items-end gap-1.5">
                       <Badge variant={agent.provider === 'anthropic' ? 'anthropic' : 'openai'}>
                         {agent.provider === 'anthropic' ? 'Claude' : 'GPT'}
                       </Badge>
                       {agent.hasConversation && (
-                        <span className="flex items-center gap-1 text-xs text-emerald-600">
+                        <span className="flex items-center gap-1 text-xs text-[#34d399]">
                           <CheckCircle2 className="w-3 h-3" />
                           Ativo
                         </span>
                       )}
                     </div>
                   </div>
-                  <h3 className="font-semibold text-zinc-900 group-hover:text-indigo-700 transition-colors mb-1">
+                  <h3 className="font-medium text-[#c8c8e8] group-hover:text-[#e0e0ff] transition-colors mb-1 text-sm">
                     {agent.name}
                   </h3>
-                  <p className="text-xs text-zinc-500 line-clamp-2">{agent.description}</p>
+                  <p className="text-xs text-[#505070] line-clamp-2 leading-relaxed">{agent.description}</p>
                 </Link>
               ))}
             </div>

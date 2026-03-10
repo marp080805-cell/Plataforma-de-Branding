@@ -102,47 +102,47 @@ export default function AdminUsersPage() {
     <>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900">Usuários</h1>
-          <p className="text-zinc-500 text-sm">Gerencie os usuários da plataforma</p>
+          <h1 className="text-lg font-semibold text-[#e0e0f0] tracking-tight">Usuários</h1>
+          <p className="text-[#505070] text-sm mt-0.5">Gerencie os usuários da plataforma</p>
         </div>
         <Button onClick={openCreate}>
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4 mr-1.5" />
           Novo Usuário
         </Button>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+          <Loader2 className="w-5 h-5 animate-spin text-[#7c6ef5]" />
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+        <div className="bg-[#0f0f18] rounded-2xl border border-white/[0.07] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-zinc-100 bg-zinc-50">
-                <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Usuário</th>
-                <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Email</th>
-                <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Perfil</th>
-                <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Status</th>
-                <th className="text-left text-xs font-semibold text-zinc-500 px-4 py-3">Criado</th>
-                <th className="text-right text-xs font-semibold text-zinc-500 px-4 py-3">Ações</th>
+              <tr className="border-b border-white/[0.05] bg-white/[0.02]">
+                <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Usuário</th>
+                <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Email</th>
+                <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Perfil</th>
+                <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Status</th>
+                <th className="text-left text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Criado</th>
+                <th className="text-right text-[10px] font-semibold text-[#404060] uppercase tracking-wider px-4 py-3">Ações</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b border-zinc-50 hover:bg-zinc-50 transition-colors">
+                <tr key={user.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
                         style={{ backgroundColor: user.avatarColor }}
                       >
                         {getInitials(user.name)}
                       </div>
-                      <span className="text-sm font-medium text-zinc-900">{user.name}</span>
+                      <span className="text-sm font-medium text-[#c8c8e8]">{user.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-zinc-600">{user.email}</td>
+                  <td className="px-4 py-3 text-sm text-[#606080]">{user.email}</td>
                   <td className="px-4 py-3">
                     <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                       {user.role === 'admin' ? 'Admin' : 'Estrategista'}
@@ -153,9 +153,9 @@ export default function AdminUsersPage() {
                       {user.isActive ? 'Ativo' : 'Inativo'}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-sm text-zinc-500">{formatDate(user.createdAt)}</td>
+                  <td className="px-4 py-3 text-xs text-[#404060]">{formatDate(user.createdAt)}</td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1.5">
                       <Button variant="outline" size="sm" onClick={() => openEdit(user)}>
                         Editar
                       </Button>
@@ -165,17 +165,16 @@ export default function AdminUsersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleActive(user)}
-                            className="text-zinc-500"
                           >
-                            {user.isActive ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                            {user.isActive ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setShowDelete(user)}
-                            className="text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+                            className="text-[#404060] hover:text-[#ff7070] hover:bg-[#c93030]/[0.1]"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </>
                       )}
@@ -196,19 +195,19 @@ export default function AdminUsersPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Nome *</Label>
+              <Label className="text-[#8080a0] text-xs">Nome *</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nome completo" />
             </div>
             <div className="space-y-1.5">
-              <Label>Email *</Label>
+              <Label className="text-[#8080a0] text-xs">Email *</Label>
               <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@exemplo.com" />
             </div>
             <div className="space-y-1.5">
-              <Label>{editing ? 'Nova senha (deixe em branco para manter)' : 'Senha *'}</Label>
+              <Label className="text-[#8080a0] text-xs">{editing ? 'Nova senha (deixe em branco para manter)' : 'Senha *'}</Label>
               <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="••••••••" />
             </div>
             <div className="space-y-1.5">
-              <Label>Perfil</Label>
+              <Label className="text-[#8080a0] text-xs">Perfil</Label>
               <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -217,17 +216,18 @@ export default function AdminUsersPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label>Cor do avatar</Label>
+            <div className="space-y-2">
+              <Label className="text-[#8080a0] text-xs">Cor do avatar</Label>
               <div className="flex gap-2">
                 {AVATAR_COLORS.map((color) => (
                   <button
                     key={color}
-                    className="w-7 h-7 rounded-full border-2 transition-transform"
+                    className="w-7 h-7 rounded-full transition-all duration-150 hover:scale-110"
                     style={{
                       backgroundColor: color,
-                      borderColor: form.avatarColor === color ? '#09090b' : 'transparent',
-                      transform: form.avatarColor === color ? 'scale(1.2)' : 'scale(1)',
+                      outline: form.avatarColor === color ? `2px solid ${color}` : 'none',
+                      outlineOffset: '2px',
+                      transform: form.avatarColor === color ? 'scale(1.1)' : undefined,
                     }}
                     onClick={() => setForm({ ...form, avatarColor: color })}
                   />
@@ -251,8 +251,8 @@ export default function AdminUsersPage() {
           <DialogHeader>
             <DialogTitle>Excluir Usuário</DialogTitle>
           </DialogHeader>
-          <p className="text-zinc-600 text-sm">
-            Tem certeza que deseja excluir <strong>"{showDelete?.name}"</strong>? Esta ação não pode ser desfeita.
+          <p className="text-[#7070a0] text-sm">
+            Tem certeza que deseja excluir <span className="text-[#c0c0d8] font-medium">"{showDelete?.name}"</span>? Esta ação não pode ser desfeita.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDelete(null)}>Cancelar</Button>
