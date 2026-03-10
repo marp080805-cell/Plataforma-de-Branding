@@ -138,9 +138,8 @@ export async function POST(req: NextRequest) {
         } else if (conversation.agent.provider === 'openai') {
           const openai = new OpenAI({ apiKey });
 
-          // Models that require the Responses API instead of Chat Completions
-          const responsesApiModels = ['gpt-5.4-pro'];
-          const useResponsesApi = responsesApiModels.includes(conversation.agent.model);
+          // GPT-5+ family uses the Responses API; GPT-4 and below use Chat Completions
+          const useResponsesApi = conversation.agent.model.startsWith('gpt-5');
 
           if (useResponsesApi) {
             const responsesStream = await openai.responses.create({
