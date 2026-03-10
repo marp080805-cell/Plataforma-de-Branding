@@ -36,9 +36,27 @@ const ICON_COMPONENTS: Record<string, React.ElementType> = {
   'bot': Bot,
 };
 
-const MODELS: Record<string, string[]> = {
-  anthropic: ['claude-sonnet-4-20250514', 'claude-haiku-4-5-20251001'],
-  openai: ['gpt-4o', 'gpt-4o-mini'],
+const MODELS: Record<string, { id: string; label: string }[]> = {
+  anthropic: [
+    { id: 'claude-opus-4-6', label: 'Claude Opus 4.6 (mais poderoso)' },
+    { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6 (recomendado)' },
+    { id: 'claude-sonnet-4-20250514', label: 'Claude Sonnet 4' },
+    { id: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5 (mais rápido)' },
+    { id: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
+    { id: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku' },
+    { id: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
+    { id: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' },
+  ],
+  openai: [
+    { id: 'gpt-4o', label: 'GPT-4o (recomendado)' },
+    { id: 'gpt-4o-mini', label: 'GPT-4o Mini (mais rápido)' },
+    { id: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+    { id: 'gpt-4', label: 'GPT-4' },
+    { id: 'o1', label: 'o1 (raciocínio avançado)' },
+    { id: 'o1-mini', label: 'o1 Mini' },
+    { id: 'o3-mini', label: 'o3 Mini' },
+    { id: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+  ],
 };
 
 const defaultAgent: Omit<Agent, 'id' | 'sortOrder'> = {
@@ -139,7 +157,7 @@ export default function AdminAgentsPage() {
   };
 
   const handleProviderChange = (provider: string) => {
-    setForm({ ...form, provider, model: MODELS[provider][0] });
+    setForm({ ...form, provider, model: MODELS[provider][0].id });
   };
 
   const IconComp = ICON_COMPONENTS[form.icon] || Bot;
@@ -280,7 +298,7 @@ export default function AdminAgentsPage() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {MODELS[form.provider]?.map((m) => (
-                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                      <SelectItem key={m.id} value={m.id}>{m.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
