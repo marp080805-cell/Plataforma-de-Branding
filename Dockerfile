@@ -6,6 +6,7 @@ COPY prisma ./prisma
 RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
+RUN apk add --no-cache openssl libc6-compat
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
