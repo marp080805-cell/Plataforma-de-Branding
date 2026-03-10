@@ -17,11 +17,9 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS=--dns-result-order=ipv4first
 
 RUN apk add --no-cache openssl ca-certificates
-
-# Force IPv4 preference (containers may lack IPv6 routing)
-RUN echo 'precedence ::ffff:0:0/96 100' >> /etc/gai.conf
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
