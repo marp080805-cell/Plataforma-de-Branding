@@ -2,16 +2,68 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { decrypt } from '@/lib/encryption';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
+import Anthropic from '@anthropic-ai/sdk';
+
+async function extractTextFromPdfWithVision(buffer: Buffer): Promise<string> {
+  try {
+    const settings = await prisma.settings.findUnique({ where: { id: 'global' } });
+    if (!settings?.anthropicApiKey) return '';
+
+    const apiKey = decrypt(settings.anthropicApiKey);
+    const anthropic = new Anthropic({ apiKey });
+
+    const base64pdf = buffer.toString('base64');
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 8192,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: 'application/pdf',
+                data: base64pdf,
+              },
+            },
+            {
+              type: 'text',
+              text: 'Extraia e retorne TODO o conteúdo textual deste documento PDF. Retorne apenas o texto extraído, sem comentários ou formatação adicional.',
+            },
+          ],
+        },
+      ],
+    });
+
+    const content = response.content[0];
+    return content.type === 'text' ? content.text : '';
+  } catch (err) {
+    console.error('Claude Vision OCR error:', err);
+    return '';
+  }
+}
 
 async function extractText(buffer: Buffer, mimeType: string, filename: string): Promise<string> {
   try {
     if (mimeType === 'application/pdf') {
-      const pdfParse = (await import('pdf-parse')).default;
-      const data = await pdfParse(buffer);
-      return data.text;
+      // Tenta extração direta de texto (PDFs com camada de texto)
+      try {
+        const pdfParse = (await import('pdf-parse')).default;
+        const data = await pdfParse(buffer);
+        const text = data.text?.trim() ?? '';
+        if (text.length > 100) return text;
+      } catch (err) {
+        console.error('pdf-parse error:', err);
+      }
+
+      // Fallback: Claude Vision para PDFs escaneados/baseados em imagem
+      return await extractTextFromPdfWithVision(buffer);
     } else if (
       mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
       filename.endsWith('.docx')
