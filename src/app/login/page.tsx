@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Zap, Loader2, Eye, EyeOff } from 'lucide-react';
@@ -44,7 +45,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-600/30">
             <Zap className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">BrandForge</h1>
+          <h1 className="text-3xl font-bold text-white tracking-tight">BrandMind</h1>
           <p className="text-zinc-400 mt-2 text-sm">Plataforma de Branding com IA</p>
         </div>
 
@@ -74,7 +75,12 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">Senha</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Senha</Label>
+                <Link href="/forgot-password" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+                  Esqueci minha senha
+                </Link>
+              </div>
               <div className="relative">
                 <Input
                   id="password"

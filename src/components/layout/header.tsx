@@ -30,7 +30,7 @@ export function Header() {
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-zinc-900 text-lg">BrandForge</span>
+            <span className="font-bold text-zinc-900 text-lg">BrandMind</span>
           </Link>
 
           {/* Right side */}

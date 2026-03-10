@@ -3,7 +3,7 @@ import './globals.css';
 import { SessionProvider } from '@/components/providers/session-provider';
 
 export const metadata: Metadata = {
-  title: 'BrandForge — Plataforma de Branding',
+  title: 'BrandMind — Plataforma de Branding com IA',
   description: 'Plataforma de branding com agentes de IA para estrategistas',
 };
 

@@ -2,7 +2,7 @@
 set -e
 
 # ============================================================
-# BrandForge — Script de Instalação Automática
+# BrandMind — Script de Instalação Automática
 # ============================================================
 
 BOLD='\033[1m'
@@ -14,7 +14,7 @@ NC='\033[0m'
 
 echo ""
 echo -e "${BOLD}${CYAN}╔══════════════════════════════════════╗${NC}"
-echo -e "${BOLD}${CYAN}║     BrandForge — Instalação           ║${NC}"
+echo -e "${BOLD}${CYAN}║     BrandMind — Instalação           ║${NC}"
 echo -e "${BOLD}${CYAN}╚══════════════════════════════════════╝${NC}"
 echo ""
 
@@ -78,7 +78,7 @@ else
 
   cat > .env <<EOF
 # ============================================================
-# BrandForge — Gerado automaticamente em $(date)
+# BrandMind — Gerado automaticamente em $(date)
 # ============================================================
 
 # Banco de dados (Supabase)
@@ -167,7 +167,7 @@ NEXTAUTH_URL_DISPLAY=$(grep NEXTAUTH_URL .env | cut -d'=' -f2)
 
 echo ""
 echo -e "${BOLD}${GREEN}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}${GREEN}║       BrandForge instalado com sucesso!           ║${NC}"
+echo -e "${BOLD}${GREEN}║       BrandMind instalado com sucesso!           ║${NC}"
 echo -e "${BOLD}${GREEN}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "  ${BOLD}URL:${NC}   ${NEXTAUTH_URL_DISPLAY}"
