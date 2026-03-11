@@ -4,25 +4,34 @@
 
 @layer base {
   :root {
-    --background: 240 12% 5%;
-    --foreground: 240 6% 90%;
-    --card: 240 10% 7%;
-    --card-foreground: 240 6% 90%;
-    --popover: 240 10% 8%;
-    --popover-foreground: 240 6% 90%;
-    --primary: 252 82% 67%;
+    /* Brand palette:
+       #D5D7C2 – bege claro
+       #161616 – quase preto
+       #000000 – preto
+       #A5BBAB – verde-sage claro
+       #76A095 – verde-sage médio
+       #47847E – verde-teal
+       #176968 – teal profundo (Pantone 4165 C) */
+
+    --background: 66 15% 80%;          /* #D5D7C2 */
+    --foreground: 0 0% 9%;             /* #161616 */
+    --card: 66 15% 84%;
+    --card-foreground: 0 0% 9%;
+    --popover: 66 15% 84%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 179 64% 25%;            /* #176968 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 7% 12%;
-    --secondary-foreground: 240 5% 65%;
-    --muted: 240 7% 11%;
-    --muted-foreground: 240 4% 48%;
-    --accent: 240 7% 14%;
-    --accent-foreground: 240 5% 82%;
+    --secondary: 175 30% 40%;          /* #47847E */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 136 11% 69%;              /* #A5BBAB */
+    --muted-foreground: 0 0% 20%;
+    --accent: 168 17% 55%;             /* #76A095 */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 70% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 7% 13%;
-    --input: 240 7% 11%;
-    --ring: 252 82% 67%;
+    --border: 168 17% 55%;             /* #76A095 */
+    --input: 66 15% 73%;
+    --ring: 179 64% 25%;               /* #176968 */
     --radius: 0.75rem;
   }
 }
@@ -48,17 +57,17 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(23, 105, 104, 0.3);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(23, 105, 104, 0.5);
 }
 
 /* ─── Selection ─────────────────────────────────────────────── */
 ::selection {
-  background: rgba(124, 110, 245, 0.25);
-  color: #e8e8f4;
+  background: rgba(23, 105, 104, 0.25);
+  color: #161616;
 }
 
 /* ─── Markdown content ──────────────────────────────────────── */
@@ -67,19 +76,19 @@
 }
 .markdown-content h1 {
   @apply text-xl font-bold mb-4 mt-6;
-  color: #e8e8f4;
+  color: #161616;
 }
 .markdown-content h2 {
   @apply text-lg font-bold mb-3 mt-5;
-  color: #e8e8f4;
+  color: #161616;
 }
 .markdown-content h3 {
   @apply text-base font-semibold mb-2 mt-4;
-  color: #d8d8ec;
+  color: #176968;
 }
 .markdown-content p {
   @apply mb-3;
-  color: #a8a8c0;
+  color: #2a2a2a;
 }
 .markdown-content ul {
   @apply list-disc pl-5 mb-3 space-y-1;
@@ -88,60 +97,60 @@
   @apply list-decimal pl-5 mb-3 space-y-1;
 }
 .markdown-content li {
-  color: #a8a8c0;
+  color: #2a2a2a;
 }
 .markdown-content code {
-  background: rgba(124, 110, 245, 0.12);
-  border: 1px solid rgba(124, 110, 245, 0.2);
+  background: rgba(23, 105, 104, 0.1);
+  border: 1px solid rgba(23, 105, 104, 0.25);
   @apply rounded px-1.5 py-0.5 text-xs font-mono;
-  color: #b4aaff;
+  color: #176968;
 }
 .markdown-content pre {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(22, 22, 22, 0.08);
+  border: 1px solid rgba(71, 132, 126, 0.25);
   @apply rounded-xl p-4 mb-3 overflow-x-auto;
 }
 .markdown-content pre code {
   @apply bg-transparent p-0 border-0;
-  color: #c8c8e0;
+  color: #161616;
 }
 .markdown-content blockquote {
-  border-left: 3px solid rgba(124, 110, 245, 0.5);
+  border-left: 3px solid rgba(23, 105, 104, 0.5);
   @apply pl-4 italic mb-3;
-  color: #8080a0;
+  color: #47847e;
 }
 .markdown-content strong {
   @apply font-semibold;
-  color: #e0e0f0;
+  color: #161616;
 }
 .markdown-content em {
   @apply italic;
-  color: #c0c0d8;
+  color: #2a2a2a;
 }
 .markdown-content hr {
   @apply my-4;
-  border-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(71, 132, 126, 0.25);
 }
 .markdown-content table {
   @apply w-full border-collapse mb-3;
 }
 .markdown-content th {
   @apply px-3 py-2 text-left text-xs font-semibold;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  color: #9090b0;
+  background: rgba(23, 105, 104, 0.08);
+  border: 1px solid rgba(71, 132, 126, 0.2);
+  color: #176968;
 }
 .markdown-content td {
   @apply px-3 py-2 text-sm;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #9898b8;
+  border: 1px solid rgba(71, 132, 126, 0.15);
+  color: #2a2a2a;
 }
 .markdown-content a {
-  color: #9d90ff;
+  color: #176968;
   @apply underline underline-offset-2;
 }
 .markdown-content a:hover {
-  color: #b8acff;
+  color: #47847e;
 }
 
 /* ─── Typing cursor ─────────────────────────────────────────── */
@@ -152,7 +161,7 @@
 .typing-cursor::after {
   content: '▋';
   animation: blink 1s infinite;
-  color: #7c6ef5;
+  color: #176968;
 }
 
 /* ─── Loading dots ──────────────────────────────────────────── */
@@ -162,7 +171,7 @@
 }
 .loading-dot {
   @apply inline-block w-1.5 h-1.5 rounded-full;
-  background: rgba(124, 110, 245, 0.6);
+  background: rgba(23, 105, 104, 0.6);
   animation: bounce-dot 1.4s infinite ease-in-out both;
 }
 .loading-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -171,26 +180,26 @@
 
 /* ─── Glow utilities ────────────────────────────────────────── */
 .glow-primary {
-  box-shadow: 0 0 40px rgba(124, 110, 245, 0.15), 0 0 80px rgba(124, 110, 245, 0.05);
+  box-shadow: 0 0 40px rgba(23, 105, 104, 0.2), 0 0 80px rgba(23, 105, 104, 0.08);
 }
 .glow-primary-sm {
-  box-shadow: 0 0 20px rgba(124, 110, 245, 0.12);
+  box-shadow: 0 0 20px rgba(23, 105, 104, 0.15);
 }
 .border-subtle {
-  border-color: rgba(255, 255, 255, 0.07);
+  border-color: rgba(71, 132, 126, 0.2);
 }
 
 /* ─── Glass card ────────────────────────────────────────────── */
 .glass {
-  background: rgba(15, 15, 24, 0.8);
+  background: rgba(213, 215, 194, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(71, 132, 126, 0.2);
 }
 
 /* ─── Gradient text ─────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #a898ff 0%, #7c6ef5 50%, #5b8af0 100%);
+  background: linear-gradient(135deg, #47847E 0%, #176968 50%, #76A095 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -204,9 +213,9 @@
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255,255,255,0.03) 25%,
-    rgba(255,255,255,0.07) 50%,
-    rgba(255,255,255,0.03) 75%
+    rgba(71, 132, 126, 0.06) 25%,
+    rgba(71, 132, 126, 0.14) 50%,
+    rgba(71, 132, 126, 0.06) 75%
   );
   background-size: 200% auto;
   animation: shimmer 2s linear infinite;
