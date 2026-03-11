@@ -10,8 +10,9 @@ export async function GET(
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const isAdmin = session.user.role === 'admin';
   const project = await prisma.project.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
   });
   if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
 
@@ -50,8 +51,9 @@ export async function POST(
 
   const { documentIds } = await req.json();
 
+  const isAdmin = session.user.role === 'admin';
   const project = await prisma.project.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
   });
   if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
 
@@ -89,8 +91,9 @@ export async function DELETE(
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const isAdmin = session.user.role === 'admin';
   const project = await prisma.project.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
   });
   if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
 
