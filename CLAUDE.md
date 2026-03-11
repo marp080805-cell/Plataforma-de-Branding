@@ -10,18 +10,19 @@ Plataforma de branding com agentes de IA especializados (BrandForge). Next.js 14
 
 ## Servidor de produção
 - Servidor: `root@srv1009331`
-- O projeto NÃO fica em `/home/user/Plataforma-de-Branding` no servidor — esse é o path do sandbox do Claude
-- O Docker container/imagem tem nome relacionado a **beforg** (confirmar com `docker ps`)
-- Para encontrar o projeto no servidor: `find / -maxdepth 5 -name "docker-compose.yml" 2>/dev/null`
+- **Path do projeto no servidor**: `/opt/brandforge/`
+- **Container**: `brandforge-app-1` (imagem: `brandforge-app`)
+- O projeto NÃO fica em `/home/user/Plataforma-de-Branding` no servidor — esse é apenas o path do sandbox do Claude
 
 ## Deploy
 O projeto roda via Docker. As migrations do Prisma rodam automaticamente no entrypoint (`docker-entrypoint.sh`).
 
 Para atualizar após push no git:
 ```bash
-# Encontrar o diretório do projeto no servidor primeiro
+cd /opt/brandforge
+git pull origin claude/setup-brandforge-mvp-3Xzho  # ou a branch desejada
 docker compose down && docker compose up -d --build
-docker compose logs -f app  # acompanhar migrations
+docker compose logs -f app  # acompanhar migrations e startup
 ```
 
 ## Stack
