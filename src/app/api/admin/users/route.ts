@@ -22,6 +22,7 @@ export async function GET() {
       role: true,
       avatarColor: true,
       isActive: true,
+      tokenLimitMonthly: true,
       createdAt: true,
       _count: { select: { projects: true } },
     },
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const { name, email, password, role, avatarColor } = await req.json();
+  const { name, email, password, role, avatarColor, tokenLimitMonthly } = await req.json();
 
   if (!name || !email || !password) {
     return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 });
@@ -55,6 +56,7 @@ export async function POST(req: NextRequest) {
       password: hashedPassword,
       role: role || 'strategist',
       avatarColor: avatarColor || '#6366f1',
+      tokenLimitMonthly: tokenLimitMonthly ?? null,
     },
     select: {
       id: true,
@@ -63,6 +65,7 @@ export async function POST(req: NextRequest) {
       role: true,
       avatarColor: true,
       isActive: true,
+      tokenLimitMonthly: true,
       createdAt: true,
     },
   });

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
 import { Header } from '@/components/layout/header';
 import Link from 'next/link';
-import { Bot, Users, Settings } from 'lucide-react';
+import { Bot, Users, Settings, BarChart2 } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -29,6 +29,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           >
             <Users className="w-3.5 h-3.5" />
             Usuários
+          </Link>
+          <Link
+            href="/admin/usage"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-[#5a8280] hover:bg-white/[0.06] hover:text-[#c0d8d6] transition-all duration-150"
+          >
+            <BarChart2 className="w-3.5 h-3.5" />
+            Uso &amp; Custos
           </Link>
           <Link
             href="/admin/settings"

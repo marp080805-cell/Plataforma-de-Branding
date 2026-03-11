@@ -32,9 +32,39 @@ export async function POST(req: NextRequest) {
 
   if (!conversation) return new Response(JSON.stringify({ error: 'Conversation not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
 
-  // Verify project ownership
-  if (conversation.project.userId !== session.user.id) {
+  // Verify project ownership (admin can access any project)
+  const isAdmin = session.user.role === 'admin';
+  if (!isAdmin && conversation.project.userId !== session.user.id) {
     return new Response('Forbidden', { status: 403 });
+  }
+
+  // Check monthly token limit for the project owner
+  const ownerId = conversation.project.userId;
+  const owner = await prisma.user.findUnique({
+    where: { id: ownerId },
+    select: { tokenLimitMonthly: true },
+  });
+
+  if (owner?.tokenLimitMonthly) {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const usage = await prisma.message.aggregate({
+      where: {
+        conversation: { project: { userId: ownerId } },
+        createdAt: { gte: startOfMonth },
+      },
+      _sum: { tokenCount: true },
+    });
+
+    const used = usage._sum.tokenCount || 0;
+    if (used >= owner.tokenLimitMonthly) {
+      return new Response(
+        JSON.stringify({ error: 'Limite de tokens mensais atingido. Entre em contato com o administrador.' }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
   }
 
   // Save user message
@@ -99,6 +129,8 @@ export async function POST(req: NextRequest) {
   // Create SSE stream
   const encoder = new TextEncoder();
   let fullResponse = '';
+  let inputTokens = 0;
+  let outputTokens = 0;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -118,7 +150,7 @@ export async function POST(req: NextRequest) {
         if (conversation.agent.provider === 'anthropic') {
           const anthropic = new Anthropic({ apiKey });
 
-          const anthropicStream = await anthropic.messages.stream({
+          const anthropicStream = anthropic.messages.stream({
             model: conversation.agent.model,
             max_tokens: conversation.agent.maxTokens,
             temperature: conversation.agent.temperature,
@@ -127,6 +159,12 @@ export async function POST(req: NextRequest) {
           });
 
           for await (const chunk of anthropicStream) {
+            if (chunk.type === 'message_start') {
+              inputTokens = chunk.message.usage?.input_tokens || 0;
+            }
+            if (chunk.type === 'message_delta' && 'usage' in chunk) {
+              outputTokens = (chunk as { usage?: { output_tokens?: number } }).usage?.output_tokens || 0;
+            }
             if (
               chunk.type === 'content_block_delta' &&
               chunk.delta.type === 'text_delta'
@@ -154,6 +192,11 @@ export async function POST(req: NextRequest) {
                 fullResponse += event.delta;
                 send(event.delta);
               }
+              if (event.type === 'response.completed') {
+                const usage = (event as { response?: { usage?: { input_tokens?: number; output_tokens?: number } } }).response?.usage;
+                inputTokens = usage?.input_tokens || 0;
+                outputTokens = usage?.output_tokens || 0;
+              }
             }
           } else {
             const openaiStream = await openai.chat.completions.create({
@@ -161,6 +204,7 @@ export async function POST(req: NextRequest) {
               temperature: conversation.agent.temperature,
               max_tokens: conversation.agent.maxTokens,
               stream: true,
+              stream_options: { include_usage: true },
               messages: [
                 { role: 'system', content: finalSystemPrompt },
                 ...history,
@@ -173,17 +217,25 @@ export async function POST(req: NextRequest) {
                 fullResponse += content;
                 send(content);
               }
+              if (chunk.usage) {
+                inputTokens = chunk.usage.prompt_tokens || 0;
+                outputTokens = chunk.usage.completion_tokens || 0;
+              }
             }
           }
         }
 
-        // Save assistant response
+        // Save assistant response with token counts
         if (fullResponse) {
+          const totalTokens = inputTokens + outputTokens;
           await prisma.message.create({
             data: {
               role: 'assistant',
               content: fullResponse,
               conversationId,
+              inputTokens: inputTokens || null,
+              outputTokens: outputTokens || null,
+              tokenCount: totalTokens || null,
             },
           });
         }

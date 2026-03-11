@@ -14,7 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const { name, email, password, role, avatarColor, isActive } = await req.json();
+  const { name, email, password, role, avatarColor, isActive, tokenLimitMonthly } = await req.json();
 
   // Prevent admin from deactivating themselves
   if (params.id === session.user.id && isActive === false) {
@@ -27,6 +27,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (role !== undefined) updateData.role = role;
   if (avatarColor !== undefined) updateData.avatarColor = avatarColor;
   if (isActive !== undefined) updateData.isActive = isActive;
+  if (tokenLimitMonthly !== undefined) updateData.tokenLimitMonthly = tokenLimitMonthly;
   if (password) {
     updateData.password = await bcrypt.hash(password, 12);
   }
@@ -41,6 +42,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       role: true,
       avatarColor: true,
       isActive: true,
+      tokenLimitMonthly: true,
       createdAt: true,
     },
   });
