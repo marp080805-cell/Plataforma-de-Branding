@@ -9,8 +9,10 @@ export default async function ProjectPage({ params }: { params: { id: string } }
   const session = await getServerSession(authOptions);
   if (!session) redirect('/login');
 
+  const isAdmin = session.user.role === 'admin';
+
   const project = await prisma.project.findFirst({
-    where: { id: params.id, userId: session.user.id },
+    where: { id: params.id, ...(isAdmin ? {} : { userId: session.user.id }) },
     include: { documents: { orderBy: { createdAt: 'desc' } } },
   });
 
