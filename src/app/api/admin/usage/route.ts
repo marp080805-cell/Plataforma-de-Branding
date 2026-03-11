@@ -219,7 +219,7 @@ export async function GET(req: NextRequest) {
     projectId: string; name: string;
     inputTokens: number; outputTokens: number; cost: number; messages: number;
   }>> = {};
-  for (const [uid, projMap] of userProjectsMap) {
+  for (const [uid, projMap] of Array.from(userProjectsMap)) {
     userProjects[uid] = Array.from(projMap.values()).sort((a, b) => b.cost - a.cost);
   }
 
@@ -227,7 +227,7 @@ export async function GET(req: NextRequest) {
     agentId: string; name: string; model: string;
     inputTokens: number; outputTokens: number; cost: number; messages: number;
   }>> = {};
-  for (const [pid, aMap] of projectAgentsMap) {
+  for (const [pid, aMap] of Array.from(projectAgentsMap)) {
     projectAgents[pid] = Array.from(aMap.values()).sort((a, b) => b.cost - a.cost);
   }
 
