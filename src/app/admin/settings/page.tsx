@@ -60,11 +60,11 @@ export default function AdminSettingsPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <h1 className="text-lg font-semibold text-[#e0e0f0] tracking-tight">Configurações</h1>
-        <p className="text-[#505070] text-sm mt-0.5">Gerencie as API keys para os provedores de IA</p>
+        <h1 className="text-lg font-semibold text-[#e0f0ef] tracking-tight">Configurações</h1>
+        <p className="text-[#4a7070] text-sm mt-0.5">Gerencie as API keys para os provedores de IA</p>
       </div>
 
-      <div className="bg-[#0f0f18] rounded-2xl border border-white/[0.07] p-6 space-y-6">
+      <div className="bg-[#0d1515] rounded-2xl border border-white/[0.07] p-6 space-y-6">
         {/* Anthropic */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -73,8 +73,8 @@ export default function AdminSettingsPage() {
                 <Key className="w-4 h-4 text-[#fbbf24]" />
               </div>
               <div>
-                <h3 className="font-medium text-[#c8c8e8] text-sm">Anthropic (Claude)</h3>
-                <p className="text-xs text-[#505070]">Agentes configurados como "anthropic"</p>
+                <h3 className="font-medium text-[#c8e8e6] text-sm">Anthropic (Claude)</h3>
+                <p className="text-xs text-[#4a7070]">Agentes configurados como "anthropic"</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export default function AdminSettingsPage() {
           )}
 
           <div className="space-y-1.5">
-            <Label className="text-[#8080a0] text-xs">{hasAnthropicKey ? 'Substituir API Key' : 'API Key *'}</Label>
+            <Label className="text-[#7a9e9c] text-xs">{hasAnthropicKey ? 'Substituir API Key' : 'API Key *'}</Label>
             <div className="relative">
               <Input
                 type={showAnthropicKey ? 'text' : 'password'}
@@ -124,14 +124,14 @@ export default function AdminSettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowAnthropicKey(!showAnthropicKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#404060] hover:text-[#8080a0] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3a5e5c] hover:text-[#7a9e9c] transition-colors"
               >
                 {showAnthropicKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-xs text-[#40405a]">
+            <p className="text-xs text-[#3a5252]">
               Obtenha em{' '}
-              <a href="https://console.anthropic.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#7c6ef5] hover:text-[#a898ff] transition-colors">
+              <a href="https://console.anthropic.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#176968] hover:text-[#47847E] transition-colors">
                 console.anthropic.com/api-keys
               </a>
             </p>
@@ -148,8 +148,8 @@ export default function AdminSettingsPage() {
                 <Key className="w-4 h-4 text-[#34d399]" />
               </div>
               <div>
-                <h3 className="font-medium text-[#c8c8e8] text-sm">OpenAI (ChatGPT)</h3>
-                <p className="text-xs text-[#505070]">Opcional — necessário apenas para agentes GPT</p>
+                <h3 className="font-medium text-[#c8e8e6] text-sm">OpenAI (ChatGPT)</h3>
+                <p className="text-xs text-[#4a7070]">Opcional — necessário apenas para agentes GPT</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export default function AdminSettingsPage() {
           )}
 
           <div className="space-y-1.5">
-            <Label className="text-[#8080a0] text-xs">{hasOpenAIKey ? 'Substituir API Key' : 'API Key'}</Label>
+            <Label className="text-[#7a9e9c] text-xs">{hasOpenAIKey ? 'Substituir API Key' : 'API Key'}</Label>
             <div className="relative">
               <Input
                 type={showOpenAIKey ? 'text' : 'password'}
@@ -199,14 +199,14 @@ export default function AdminSettingsPage() {
               <button
                 type="button"
                 onClick={() => setShowOpenAIKey(!showOpenAIKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#404060] hover:text-[#8080a0] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3a5e5c] hover:text-[#7a9e9c] transition-colors"
               >
                 {showOpenAIKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-xs text-[#40405a]">
+            <p className="text-xs text-[#3a5252]">
               Obtenha em{' '}
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#7c6ef5] hover:text-[#a898ff] transition-colors">
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#176968] hover:text-[#47847E] transition-colors">
                 platform.openai.com/api-keys
               </a>
             </p>
@@ -218,7 +218,7 @@ export default function AdminSettingsPage() {
             {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Salvar API Keys
           </Button>
-          <p className="text-xs text-[#40405a] mt-2">
+          <p className="text-xs text-[#3a5252] mt-2">
             As API keys são armazenadas criptografadas no banco de dados.
           </p>
         </div>

@@ -80,7 +80,7 @@ function ResetPasswordForm() {
           <p className="text-zinc-500 text-sm mb-6">
             Este link de recuperação é inválido ou expirou.
           </p>
-          <Link href="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+          <Link href="/forgot-password" className="text-sm text-[#176968] hover:text-[#47847E] font-medium">
             Solicitar novo link
           </Link>
         </div>
@@ -156,7 +156,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-600/30">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#176968] rounded-2xl mb-4 shadow-lg shadow-[rgba(23,105,104,0.3)]">
             <Zap className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">BrandMind</h1>

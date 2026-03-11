@@ -249,31 +249,31 @@ export function ChatClient({
       <div
         className={`${
           sidebarOpen ? 'w-60' : 'w-0'
-        } transition-all duration-300 overflow-hidden border-r border-white/[0.06] bg-[#0a0a12] flex-shrink-0`}
+        } transition-all duration-300 overflow-hidden border-r border-white/[0.06] bg-[#090e0e] flex-shrink-0`}
       >
         <div className="w-60 h-full flex flex-col">
           {/* Breadcrumb */}
           <div className="p-4 border-b border-white/[0.05]">
-            <div className="flex items-center gap-1 text-xs text-[#404060] mb-2">
-              <Link href="/dashboard" className="hover:text-[#7070a0] transition-colors">Projetos</Link>
+            <div className="flex items-center gap-1 text-xs text-[#3a5e5c] mb-2">
+              <Link href="/dashboard" className="hover:text-[#6a9492] transition-colors">Projetos</Link>
               <ChevronRight className="w-3 h-3" />
-              <Link href={`/projects/${project.id}`} className="hover:text-[#7070a0] transition-colors truncate">{project.name}</Link>
+              <Link href={`/projects/${project.id}`} className="hover:text-[#6a9492] transition-colors truncate">{project.name}</Link>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full flex-shrink-0 opacity-70" style={{ backgroundColor: project.color }} />
-              <span className="text-xs font-medium text-[#9090b0] truncate">{project.name}</span>
+              <span className="text-xs font-medium text-[#90b0ae] truncate">{project.name}</span>
             </div>
           </div>
 
           {/* Documents */}
           <div className="flex-1 overflow-y-auto p-4">
-            <h3 className="text-[10px] font-semibold text-[#404060] uppercase tracking-widest mb-3">
+            <h3 className="text-[10px] font-semibold text-[#3a5e5c] uppercase tracking-widest mb-3">
               Contexto ({selectedDocIds.length}/{initialDocuments.length})
             </h3>
             {initialDocuments.length === 0 ? (
-              <p className="text-xs text-[#40405a]">
+              <p className="text-xs text-[#3a5252]">
                 Nenhum documento.{' '}
-                <Link href={`/projects/${project.id}`} className="text-[#7c6ef5] hover:text-[#9d90ff] transition-colors">
+                <Link href={`/projects/${project.id}`} className="text-[#176968] hover:text-[#76A095] transition-colors">
                   Adicionar
                 </Link>
               </p>
@@ -286,7 +286,7 @@ export function ChatClient({
                       key={doc.id}
                       className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all duration-150 ${
                         selected
-                          ? 'bg-[#7c6ef5]/[0.1] border border-[#7c6ef5]/[0.15]'
+                          ? 'bg-[#176968]/[0.1] border border-[#176968]/[0.15]'
                           : 'hover:bg-white/[0.04] border border-transparent'
                       }`}
                     >
@@ -294,12 +294,12 @@ export function ChatClient({
                         type="checkbox"
                         checked={selected}
                         onChange={() => toggleDoc(doc.id)}
-                        className="accent-[#7c6ef5] w-3.5 h-3.5 flex-shrink-0"
+                        className="accent-[#176968] w-3.5 h-3.5 flex-shrink-0"
                       />
                       <span className="flex-shrink-0">{getFileIcon(doc.mimeType)}</span>
                       <span
                         className={`text-xs truncate ${
-                          selected ? 'text-[#a898ff] font-medium' : 'text-[#60607a]'
+                          selected ? 'text-[#47847E] font-medium' : 'text-[#5a7a78]'
                         }`}
                       >
                         {doc.name}
@@ -316,7 +316,7 @@ export function ChatClient({
       {/* Toggle sidebar button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="absolute z-10 w-5 h-10 bg-[#0f0f1a] border border-white/[0.08] rounded-r-lg flex items-center justify-center text-[#404060] hover:text-[#8080a0] transition-all duration-300 shadow-lg"
+        className="absolute z-10 w-5 h-10 bg-[#0d1515] border border-white/[0.08] rounded-r-lg flex items-center justify-center text-[#3a5e5c] hover:text-[#7a9e9c] transition-all duration-300 shadow-lg"
         style={{ left: sidebarOpen ? '240px' : '0px' }}
       >
         {sidebarOpen ? (
@@ -327,15 +327,15 @@ export function ChatClient({
       </button>
 
       {/* Chat area */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#080810]">
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#080d0d]">
         {/* Chat header */}
-        <div className="border-b border-white/[0.06] px-6 py-3 flex items-center justify-between flex-shrink-0 bg-[#0a0a12]/60 backdrop-blur-sm">
+        <div className="border-b border-white/[0.06] px-6 py-3 flex items-center justify-between flex-shrink-0 bg-[#090e0e]/60 backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#7c6ef5]/[0.12] rounded-xl flex items-center justify-center text-[#9d90ff] border border-[#7c6ef5]/[0.2]">
+            <div className="w-8 h-8 bg-[#176968]/[0.12] rounded-xl flex items-center justify-center text-[#76A095] border border-[#176968]/[0.2]">
               {getAgentIcon(agent.icon)}
             </div>
             <div>
-              <h2 className="font-medium text-[#d0d0e8] text-sm">{agent.name}</h2>
+              <h2 className="font-medium text-[#d0e8e7] text-sm">{agent.name}</h2>
               <Badge
                 variant={agent.provider === 'anthropic' ? 'anthropic' : 'openai'}
               >
@@ -347,7 +347,7 @@ export function ChatClient({
             variant="ghost"
             size="sm"
             onClick={handleClearConversation}
-            className="text-[#404060] hover:text-[#ff7070] hover:bg-[#c93030]/[0.08]"
+            className="text-[#3a5e5c] hover:text-[#ff7070] hover:bg-[#c93030]/[0.08]"
           >
             <Trash2 className="w-3.5 h-3.5 mr-1.5" />
             Limpar
@@ -358,13 +358,13 @@ export function ChatClient({
         <div className="flex-1 overflow-y-auto px-4 py-8 space-y-5">
           {messages.length === 0 && !streaming && (
             <div className="text-center py-16">
-              <div className="w-14 h-14 bg-[#7c6ef5]/[0.08] rounded-2xl flex items-center justify-center text-[#9d90ff] mx-auto mb-4 border border-[#7c6ef5]/[0.15]">
+              <div className="w-14 h-14 bg-[#176968]/[0.08] rounded-2xl flex items-center justify-center text-[#76A095] mx-auto mb-4 border border-[#176968]/[0.15]">
                 {getAgentIcon(agent.icon)}
               </div>
-              <h3 className="font-medium text-[#c0c0d8] mb-1.5 text-sm">{agent.name}</h3>
-              <p className="text-xs text-[#505070] max-w-xs mx-auto leading-relaxed">{agent.description}</p>
+              <h3 className="font-medium text-[#c0d8d6] mb-1.5 text-sm">{agent.name}</h3>
+              <p className="text-xs text-[#4a7070] max-w-xs mx-auto leading-relaxed">{agent.description}</p>
               {selectedDocIds.length > 0 && (
-                <p className="text-xs text-[#7c6ef5]/80 mt-3">
+                <p className="text-xs text-[#176968]/80 mt-3">
                   {selectedDocIds.length} documento(s) no contexto
                 </p>
               )}
@@ -379,8 +379,8 @@ export function ChatClient({
               <div
                 className={`max-w-[78%] rounded-2xl px-4 py-3 ${
                   msg.role === 'user'
-                    ? 'bg-[#7c6ef5] text-white rounded-br-md shadow-[0_0_20px_rgba(124,110,245,0.15)]'
-                    : 'bg-[#0f0f1a] border border-white/[0.07] rounded-bl-md'
+                    ? 'bg-[#176968] text-white rounded-br-md shadow-[0_0_20px_rgba(23,105,104,0.15)]'
+                    : 'bg-[#0d1515] border border-white/[0.07] rounded-bl-md'
                 }`}
               >
                 {msg.role === 'user' ? (
@@ -397,7 +397,7 @@ export function ChatClient({
           {/* Streaming message */}
           {streaming && (
             <div className="flex justify-start">
-              <div className="max-w-[78%] bg-[#0f0f1a] border border-white/[0.07] rounded-2xl rounded-bl-md px-4 py-3">
+              <div className="max-w-[78%] bg-[#0d1515] border border-white/[0.07] rounded-2xl rounded-bl-md px-4 py-3">
                 {streamingContent ? (
                   <div className="markdown-content">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingContent}</ReactMarkdown>
@@ -426,9 +426,9 @@ export function ChatClient({
         </div>
 
         {/* Input area */}
-        <div className="border-t border-white/[0.06] p-4 flex-shrink-0 bg-[#0a0a12]/40 backdrop-blur-sm">
+        <div className="border-t border-white/[0.06] p-4 flex-shrink-0 bg-[#090e0e]/40 backdrop-blur-sm">
           <div className="max-w-3xl mx-auto flex gap-2.5 items-end">
-            <div className="flex-1 border border-white/[0.09] rounded-xl overflow-hidden bg-white/[0.04] focus-within:border-[#7c6ef5]/40 focus-within:bg-[#7c6ef5]/[0.04] transition-all duration-200">
+            <div className="flex-1 border border-white/[0.09] rounded-xl overflow-hidden bg-white/[0.04] focus-within:border-[#176968]/40 focus-within:bg-[#176968]/[0.04] transition-all duration-200">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -437,7 +437,7 @@ export function ChatClient({
                 placeholder={`Pergunte ao ${agent.name}...`}
                 rows={1}
                 disabled={streaming}
-                className="w-full px-4 py-3 text-sm resize-none outline-none bg-transparent text-[#d0d0e8] placeholder:text-[#3a3a54] disabled:opacity-40"
+                className="w-full px-4 py-3 text-sm resize-none outline-none bg-transparent text-[#d0e8e7] placeholder:text-[#2a4a48] disabled:opacity-40"
                 style={{ minHeight: '44px', maxHeight: '200px' }}
               />
             </div>
@@ -453,7 +453,7 @@ export function ChatClient({
               )}
             </Button>
           </div>
-          <p className="text-center text-[10px] text-[#30304a] mt-2">
+          <p className="text-center text-[10px] text-[#2a4644] mt-2">
             Enter para enviar · Shift+Enter para nova linha
           </p>
         </div>

@@ -7,10 +7,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-[#7c6ef5]/[0.15] text-[#a898ff] border border-[#7c6ef5]/[0.25]',
-        secondary: 'bg-white/[0.06] text-[#9090b0] border border-white/[0.08]',
+        default: 'bg-[#176968]/[0.15] text-[#76A095] border border-[#176968]/[0.25]',
+        secondary: 'bg-white/[0.06] text-[#90b0ae] border border-white/[0.08]',
         destructive: 'bg-[#c93030]/[0.15] text-[#ff8080] border border-[#c93030]/[0.25]',
-        outline: 'text-[#9090b0] border border-white/[0.1]',
+        outline: 'text-[#90b0ae] border border-white/[0.1]',
         anthropic: 'bg-[#f59e0b]/[0.12] text-[#fbbf24] border border-[#f59e0b]/[0.2]',
         openai: 'bg-[#10b981]/[0.12] text-[#34d399] border border-[#10b981]/[0.2]',
       },

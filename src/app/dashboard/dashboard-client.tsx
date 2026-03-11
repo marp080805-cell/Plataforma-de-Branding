@@ -34,7 +34,7 @@ interface Project {
 }
 
 const PRESET_COLORS = [
-  '#7c6ef5', '#9f7aea', '#e879f9', '#f472b6',
+  '#176968', '#47847E', '#76A095', '#A5BBAB',
   '#fb923c', '#facc15', '#4ade80', '#34d399',
   '#22d3ee', '#60a5fa',
 ];
@@ -48,7 +48,7 @@ export function DashboardClient() {
   const [showDelete, setShowDelete] = useState<Project | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({ name: '', description: '', color: '#7c6ef5' });
+  const [form, setForm] = useState({ name: '', description: '', color: '#176968' });
 
   useEffect(() => {
     fetchProjects();
@@ -71,7 +71,7 @@ export function DashboardClient() {
       body: JSON.stringify(form),
     });
     setShowCreate(false);
-    setForm({ name: '', description: '', color: '#6366f1' });
+    setForm({ name: '', description: '', color: '#176968' });
     setSaving(false);
     fetchProjects();
   };
@@ -111,12 +111,12 @@ export function DashboardClient() {
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-[#e0e0f0] tracking-tight">Projetos</h1>
-          <p className="text-[#50506a] text-sm mt-0.5">
+          <h1 className="text-xl font-semibold text-[#e0f0ef] tracking-tight">Projetos</h1>
+          <p className="text-[#4a6a68] text-sm mt-0.5">
             {projects.length} {projects.length === 1 ? 'projeto' : 'projetos'}
           </p>
         </div>
-        <Button onClick={() => { setForm({ name: '', description: '', color: '#7c6ef5' }); setShowCreate(true); }}>
+        <Button onClick={() => { setForm({ name: '', description: '', color: '#176968' }); setShowCreate(true); }}>
           <Plus className="w-4 h-4 mr-1.5" />
           Novo Projeto
         </Button>
@@ -125,7 +125,7 @@ export function DashboardClient() {
       {/* Search */}
       {projects.length > 0 && (
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#404060]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#3a5e5c]" />
           <Input
             placeholder="Buscar projetos..."
             value={search}
@@ -138,17 +138,17 @@ export function DashboardClient() {
       {/* Projects Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-5 h-5 animate-spin text-[#7c6ef5]" />
+          <Loader2 className="w-5 h-5 animate-spin text-[#176968]" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-24">
           <div className="w-14 h-14 bg-white/[0.04] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FolderOpen className="w-6 h-6 text-[#404060]" />
+            <FolderOpen className="w-6 h-6 text-[#3a5e5c]" />
           </div>
-          <h3 className="text-base font-medium text-[#c0c0d8] mb-1.5">
+          <h3 className="text-base font-medium text-[#c0d8d6] mb-1.5">
             {search ? 'Nenhum projeto encontrado' : 'Nenhum projeto ainda'}
           </h3>
-          <p className="text-[#505070] text-sm mb-6 max-w-xs mx-auto">
+          <p className="text-[#4a7070] text-sm mb-6 max-w-xs mx-auto">
             {search
               ? 'Tente buscar por outro nome'
               : 'Organize seus clientes em projetos separados com agentes dedicados'}
@@ -165,7 +165,7 @@ export function DashboardClient() {
           {filtered.map((project) => (
             <div
               key={project.id}
-              className="bg-[#0f0f18] border border-white/[0.07] rounded-2xl overflow-hidden hover:border-white/[0.13] transition-all duration-300 group"
+              className="bg-[#0d1515] border border-white/[0.07] rounded-2xl overflow-hidden hover:border-white/[0.13] transition-all duration-300 group"
             >
               {/* Color accent bar */}
               <div className="h-[3px] opacity-80" style={{ backgroundColor: project.color }} />
@@ -178,12 +178,12 @@ export function DashboardClient() {
                         className="w-2 h-2 rounded-full flex-shrink-0 opacity-80"
                         style={{ backgroundColor: project.color }}
                       />
-                      <h3 className="font-medium text-[#d8d8f0] group-hover:text-[#e8e8ff] transition-colors truncate text-sm">
+                      <h3 className="font-medium text-[#d8f0ee] group-hover:text-[#e8f8f7] transition-colors truncate text-sm">
                         {project.name}
                       </h3>
                     </div>
                     {project.description && (
-                      <p className="text-[#505070] text-xs leading-relaxed pl-4.5">
+                      <p className="text-[#4a7070] text-xs leading-relaxed pl-4.5">
                         {truncate(project.description, 75)}
                       </p>
                     )}
@@ -192,7 +192,7 @@ export function DashboardClient() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1.5 rounded-lg hover:bg-white/[0.07] transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">
-                        <MoreVertical className="w-3.5 h-3.5 text-[#606080]" />
+                        <MoreVertical className="w-3.5 h-3.5 text-[#5a8280]" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -210,7 +210,7 @@ export function DashboardClient() {
                   </DropdownMenu>
                 </div>
 
-                <div className="flex items-center gap-4 mt-4 pt-3.5 border-t border-white/[0.05] text-xs text-[#48485e]">
+                <div className="flex items-center gap-4 mt-4 pt-3.5 border-t border-white/[0.05] text-xs text-[#42605e]">
                   <span className="flex items-center gap-1.5">
                     <FileText className="w-3 h-3" />
                     {project._count.documents} {project._count.documents === 1 ? 'doc' : 'docs'}
@@ -234,7 +234,7 @@ export function DashboardClient() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[#8080a0] text-xs">Nome do projeto *</Label>
+              <Label className="text-[#7a9e9c] text-xs">Nome do projeto *</Label>
               <Input
                 placeholder="Ex: Marca XYZ"
                 value={form.name}
@@ -243,7 +243,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[#8080a0] text-xs">Descrição (opcional)</Label>
+              <Label className="text-[#7a9e9c] text-xs">Descrição (opcional)</Label>
               <Textarea
                 placeholder="Breve descrição do projeto..."
                 value={form.description}
@@ -252,7 +252,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#8080a0] text-xs">Cor de identificação</Label>
+              <Label className="text-[#7a9e9c] text-xs">Cor de identificação</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -290,14 +290,14 @@ export function DashboardClient() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[#8080a0] text-xs">Nome do projeto *</Label>
+              <Label className="text-[#7a9e9c] text-xs">Nome do projeto *</Label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[#8080a0] text-xs">Descrição (opcional)</Label>
+              <Label className="text-[#7a9e9c] text-xs">Descrição (opcional)</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -305,7 +305,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#8080a0] text-xs">Cor de identificação</Label>
+              <Label className="text-[#7a9e9c] text-xs">Cor de identificação</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -341,9 +341,9 @@ export function DashboardClient() {
           <DialogHeader>
             <DialogTitle>Excluir Projeto</DialogTitle>
           </DialogHeader>
-          <p className="text-[#7070a0] text-sm">
+          <p className="text-[#6a9492] text-sm">
             Tem certeza que deseja excluir{' '}
-            <span className="text-[#c0c0d8] font-medium">"{showDelete?.name}"</span>? Todos os documentos e conversas serão
+            <span className="text-[#c0d8d6] font-medium">"{showDelete?.name}"</span>? Todos os documentos e conversas serão
             removidos permanentemente.
           </p>
           <DialogFooter>

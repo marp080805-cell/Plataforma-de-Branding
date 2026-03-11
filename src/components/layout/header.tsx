@@ -22,15 +22,15 @@ export function Header() {
   const isAdmin = session.user.role === 'admin';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#0a0a10]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#090e0e]/90 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 bg-[#7c6ef5] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(124,110,245,0.4)] group-hover:shadow-[0_0_20px_rgba(124,110,245,0.5)] transition-all duration-300">
+            <div className="w-7 h-7 bg-[#176968] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(23,105,104,0.4)] group-hover:shadow-[0_0_20px_rgba(23,105,104,0.5)] transition-all duration-300">
               <Zap className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-semibold text-[#e0e0f0] text-base tracking-tight group-hover:text-white transition-colors">BrandMind</span>
+            <span className="font-semibold text-[#e0f0ef] text-base tracking-tight group-hover:text-white transition-colors">BrandMind</span>
           </Link>
 
           {/* Right side */}
@@ -38,7 +38,7 @@ export function Header() {
             {isAdmin && (
               <Link
                 href="/admin"
-                className="text-xs text-[#606080] hover:text-[#a0a0c0] transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05]"
+                className="text-xs text-[#5a8280] hover:text-[#90b0ae] transition-colors font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05]"
               >
                 Admin
               </Link>
@@ -52,12 +52,12 @@ export function Header() {
                 >
                   {initials}
                 </div>
-                <ChevronDown className="w-3 h-3 text-[#404060] group-hover:text-[#8080a0] transition-colors" />
+                <ChevronDown className="w-3 h-3 text-[#3a5e5c] group-hover:text-[#7a9e9c] transition-colors" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
-                  <p className="font-medium text-[#e0e0f0] text-sm">{session.user.name}</p>
-                  <p className="text-xs text-[#60607a] font-normal mt-0.5">{session.user.email}</p>
+                  <p className="font-medium text-[#e0f0ef] text-sm">{session.user.name}</p>
+                  <p className="text-xs text-[#5a7a78] font-normal mt-0.5">{session.user.email}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {isAdmin && (

@@ -38,26 +38,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080810] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#080d0d] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background ambient glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#7c6ef5]/[0.06] rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 left-1/3 w-[400px] h-[300px] bg-[#5b4af0]/[0.04] rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#176968]/[0.06] rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 left-1/3 w-[400px] h-[300px] bg-[#0f5050]/[0.04] rounded-full blur-[120px]" />
       </div>
 
       <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-[#7c6ef5] rounded-2xl mb-5 shadow-[0_0_40px_rgba(124,110,245,0.35)]">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-[#176968] rounded-2xl mb-5 shadow-[0_0_40px_rgba(23,105,104,0.35)]">
             <Zap className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-semibold text-[#e8e8f4] tracking-tight">BrandMind</h1>
-          <p className="text-[#60607a] mt-1.5 text-sm">Plataforma de Branding com IA</p>
+          <h1 className="text-2xl font-semibold text-[#e8f4f3] tracking-tight">BrandMind</h1>
+          <p className="text-[#5a7a78] mt-1.5 text-sm">Plataforma de Branding com IA</p>
         </div>
 
         {/* Card */}
-        <div className="bg-[#0f0f18] border border-white/[0.08] rounded-2xl p-7 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
-          <h2 className="text-base font-semibold text-[#d8d8f0] mb-5">Acesse sua conta</h2>
+        <div className="bg-[#0d1515] border border-white/[0.08] rounded-2xl p-7 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+          <h2 className="text-base font-semibold text-[#d8f0ee] mb-5">Acesse sua conta</h2>
 
           {error && (
             <div className="mb-4 p-3 bg-[#c93030]/[0.12] border border-[#c93030]/[0.2] rounded-xl text-[#ff8080] text-sm flex items-center gap-2">
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-[#8080a0] text-xs font-medium">Email</Label>
+              <Label htmlFor="email" className="text-[#7a9e9c] text-xs font-medium">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -83,8 +83,8 @@ export default function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-[#8080a0] text-xs font-medium">Senha</Label>
-                <Link href="/forgot-password" className="text-xs text-[#7c6ef5] hover:text-[#a898ff] transition-colors">
+                <Label htmlFor="password" className="text-[#7a9e9c] text-xs font-medium">Senha</Label>
+                <Link href="/forgot-password" className="text-xs text-[#176968] hover:text-[#47847E] transition-colors">
                   Esqueci minha senha
                 </Link>
               </div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#404060] hover:text-[#8080a0] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3a5e5c] hover:text-[#7a9e9c] transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -123,7 +123,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="mt-5 text-center text-xs text-[#404058]">
+        <p className="mt-5 text-center text-xs text-[#3a5250]">
           Acesso exclusivo — conta criada pelo administrador
         </p>
       </div>
