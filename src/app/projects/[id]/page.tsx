@@ -35,7 +35,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
   });
 
   return (
-    <div className="min-h-screen bg-[#080810]">
+    <div className="min-h-screen bg-[#080d0d]">
       <Header />
       <ProjectClient
         project={{

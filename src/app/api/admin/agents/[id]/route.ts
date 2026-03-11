@@ -14,7 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const data = await req.json();
-  const { name, description, icon, systemPrompt, provider, model, temperature, maxTokens, isActive, sortOrder } = data;
+  const { name, description, icon, systemPrompt, provider, model, temperature, maxTokens, isActive, sortOrder, tutorialUrl } = data;
 
   const agent = await prisma.agent.update({
     where: { id: params.id },
@@ -29,6 +29,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       ...(maxTokens !== undefined && { maxTokens }),
       ...(isActive !== undefined && { isActive }),
       ...(sortOrder !== undefined && { sortOrder }),
+      ...(tutorialUrl !== undefined && { tutorialUrl: tutorialUrl || null }),
     },
   });
 

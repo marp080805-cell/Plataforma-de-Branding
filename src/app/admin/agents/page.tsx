@@ -26,6 +26,7 @@ interface Agent {
   maxTokens: number;
   isActive: boolean;
   sortOrder: number;
+  tutorialUrl: string | null;
 }
 
 const ICONS = ['brain', 'book-open', 'search', 'bot'];
@@ -70,6 +71,7 @@ const defaultAgent: Omit<Agent, 'id' | 'sortOrder'> = {
   temperature: 0.7,
   maxTokens: 4096,
   isActive: true,
+  tutorialUrl: null,
 };
 
 export default function AdminAgentsPage() {
@@ -109,6 +111,7 @@ export default function AdminAgentsPage() {
       temperature: agent.temperature,
       maxTokens: agent.maxTokens,
       isActive: agent.isActive,
+      tutorialUrl: agent.tutorialUrl,
     });
     setShowForm(true);
   };
@@ -329,6 +332,15 @@ export default function AdminAgentsPage() {
                 onChange={(e) => setForm({ ...form, maxTokens: parseInt(e.target.value) || 4096 })}
                 min={256}
                 max={16384}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-[#7a9e9c] text-xs">Link do Tutorial (opcional)</Label>
+              <Input
+                value={form.tutorialUrl || ''}
+                onChange={(e) => setForm({ ...form, tutorialUrl: e.target.value || null })}
+                placeholder="https://youtube.com/watch?v=..."
               />
             </div>
 

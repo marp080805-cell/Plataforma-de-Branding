@@ -46,6 +46,7 @@ model Agent {
   maxTokens     Int            @default(4096)
   isActive      Boolean        @default(true)
   sortOrder     Int            @default(0)
+  tutorialUrl   String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   conversations Conversation[]

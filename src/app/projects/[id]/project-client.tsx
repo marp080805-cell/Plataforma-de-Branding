@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import Link from 'next/link';
 import {
   ChevronRight, Upload, FileText, Trash2, Loader2, Brain,
-  BookOpen, Search, Bot, CheckCircle2, File, Image,
+  BookOpen, Search, Bot, CheckCircle2, File, Image, PlayCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatBytes, formatDate } from '@/lib/utils';
@@ -26,6 +26,7 @@ interface Agent {
   icon: string;
   provider: string;
   hasConversation: boolean;
+  tutorialUrl: string | null;
 }
 
 interface Project {
@@ -213,32 +214,50 @@ export function ProjectClient({ project, agents }: Props) {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {agents.map((agent) => (
-                <Link
+                <div
                   key={agent.id}
-                  href={`/projects/${project.id}/agents/${agent.id}`}
-                  className="bg-[#0d1515] rounded-2xl border border-white/[0.07] p-5 hover:border-[#176968]/30 hover:bg-[#176968]/[0.03] transition-all duration-200 group"
+                  className="bg-[#0d1515] rounded-2xl border border-white/[0.07] hover:border-[#176968]/30 hover:bg-[#176968]/[0.03] transition-all duration-200 group overflow-hidden flex flex-col"
                 >
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="w-11 h-11 bg-[#176968]/[0.1] rounded-xl flex items-center justify-center text-[#76A095] group-hover:bg-[#176968]/[0.15] transition-colors border border-[#176968]/[0.15]">
-                      {getAgentIcon(agent.icon)}
+                  <Link
+                    href={`/projects/${project.id}/agents/${agent.id}`}
+                    className="p-5 flex-1"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="w-11 h-11 bg-[#176968]/[0.1] rounded-xl flex items-center justify-center text-[#76A095] group-hover:bg-[#176968]/[0.15] transition-colors border border-[#176968]/[0.15]">
+                        {getAgentIcon(agent.icon)}
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <Badge variant={agent.provider === 'anthropic' ? 'anthropic' : 'openai'}>
+                          {agent.provider === 'anthropic' ? 'Claude' : 'GPT'}
+                        </Badge>
+                        {agent.hasConversation && (
+                          <span className="flex items-center gap-1 text-xs text-[#34d399]">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Ativo
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1.5">
-                      <Badge variant={agent.provider === 'anthropic' ? 'anthropic' : 'openai'}>
-                        {agent.provider === 'anthropic' ? 'Claude' : 'GPT'}
-                      </Badge>
-                      {agent.hasConversation && (
-                        <span className="flex items-center gap-1 text-xs text-[#34d399]">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Ativo
-                        </span>
-                      )}
+                    <h3 className="font-medium text-[#c8e8e6] group-hover:text-[#e0f0ef] transition-colors mb-1 text-sm">
+                      {agent.name}
+                    </h3>
+                    <p className="text-xs text-[#4a7070] line-clamp-2 leading-relaxed">{agent.description}</p>
+                  </Link>
+                  {agent.tutorialUrl && (
+                    <div className="px-5 pb-4">
+                      <a
+                        href={agent.tutorialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-xs text-[#176968] hover:text-[#1d8584] font-medium transition-colors border border-[#176968]/[0.25] rounded-lg px-3 py-2 hover:bg-[#176968]/[0.06] w-full justify-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <PlayCircle className="w-3.5 h-3.5" />
+                        Ver Tutorial
+                      </a>
                     </div>
-                  </div>
-                  <h3 className="font-medium text-[#c8e8e6] group-hover:text-[#e0e0ff] transition-colors mb-1 text-sm">
-                    {agent.name}
-                  </h3>
-                  <p className="text-xs text-[#4a7070] line-clamp-2 leading-relaxed">{agent.description}</p>
-                </Link>
+                  )}
+                </div>
               ))}
             </div>
           )}

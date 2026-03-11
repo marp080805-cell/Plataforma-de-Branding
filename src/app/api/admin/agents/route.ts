@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const data = await req.json();
-  const { name, description, icon, systemPrompt, provider, model, temperature, maxTokens, isActive, sortOrder } = data;
+  const { name, description, icon, systemPrompt, provider, model, temperature, maxTokens, isActive, sortOrder, tutorialUrl } = data;
 
   if (!name || !systemPrompt) {
     return NextResponse.json({ error: 'Name and system prompt are required' }, { status: 400 });
@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
       maxTokens: maxTokens ?? 4096,
       isActive: isActive ?? true,
       sortOrder: sortOrder ?? nextSortOrder,
+      tutorialUrl: tutorialUrl || null,
     },
   });
 
