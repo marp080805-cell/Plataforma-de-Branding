@@ -76,6 +76,7 @@ interface UsageData {
   userProjects: Record<string, ProjectRow[]>;
   projectAgents: Record<string, AgentRow[]>;
   period: string;
+  pricingLastFetch: string | null;
 }
 
 const PERIOD_LABELS: Record<Period, string> = {
@@ -614,7 +615,11 @@ export default function UsagePage() {
       </div>
 
       <p className="text-xs text-[#3a5a58] text-center">
-        Custos calculados com base nos preços publicados dos provedores. Inclui tokens de chat e OCR de documentos. Valores aproximados.
+        Custos calculados com base nos preços LiteLLM (atualização automática a cada 24h).
+        {data?.pricingLastFetch
+          ? <> Última sincronização: <span className="text-[#4a7070]">{new Date(data.pricingLastFetch).toLocaleString('pt-BR')}</span>.</>
+          : <> Preços carregados da tabela local (sincronização pendente).</>
+        }
       </p>
     </div>
   );
