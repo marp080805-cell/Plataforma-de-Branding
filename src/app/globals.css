@@ -38,7 +38,7 @@
   ─────────────────────────────────────────────────────────── */
   .dark {
     --background: 0 0% 4%;             /* #0a0a0a — preto puro */
-    --foreground: 0 0% 93%;            /* #ededed */
+    --foreground: 66 15% 80%;           /* #D5D7C2 — warm cream from brand palette */
     --card: 0 0% 8%;                   /* #141414 */
     --card-foreground: 0 0% 93%;
     --popover: 0 0% 9%;                /* #171717 */
