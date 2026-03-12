@@ -36,13 +36,21 @@ export function Header() {
             <span className="font-semibold text-foreground text-base tracking-tight group-hover:text-primary transition-colors">BrandMind</span>
             <span className="inline-flex items-baseline gap-[5px] ml-0.5">
               <span className="text-muted-foreground text-[11px] font-medium italic leading-none">by</span>
+              {/* Dark mode: white logo */}
               <Image
                 src="/seuresultado.png"
                 alt="seuresultado"
                 width={100}
                 height={19}
-                className="opacity-40 group-hover:opacity-60 transition-opacity translate-y-[2px] dark:opacity-50 dark:group-hover:opacity-70"
-                style={{ filter: 'var(--logo-filter, none)' }}
+                className="hidden dark:block opacity-50 group-hover:opacity-70 transition-opacity translate-y-[2px]"
+              />
+              {/* Light mode: black logo */}
+              <Image
+                src="/seuresultado-preto.png"
+                alt="seuresultado"
+                width={100}
+                height={19}
+                className="block dark:hidden opacity-40 group-hover:opacity-60 transition-opacity translate-y-[2px]"
               />
             </span>
           </Link>
