@@ -2,6 +2,7 @@
 
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Zap, Settings, Users, Bot, LogOut, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
@@ -31,6 +32,8 @@ export function Header() {
               <Zap className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="font-semibold text-[#e0f0ef] text-base tracking-tight group-hover:text-white transition-colors">BrandMind</span>
+            <span className="text-[#5a8280] text-xs font-normal ml-1">by</span>
+            <Image src="/seuresultado.png" alt="seuresultado" width={110} height={22} className="ml-1 opacity-80 group-hover:opacity-100 transition-opacity" />
           </Link>
 
           {/* Right side */}
