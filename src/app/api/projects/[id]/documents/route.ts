@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { decrypt } from '@/lib/encryption';
+import { calculateCost } from '@/lib/pricing';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
@@ -16,13 +17,20 @@ import OpenAI from 'openai';
 const PDF_OCR_MODEL = 'claude-haiku-4-5-20251001';
 const IMAGE_OCR_MODEL = 'gpt-4o-mini';
 
+interface OcrResult {
+  text: string;
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+}
+
 async function getSettings() {
   return prisma.settings.findUnique({ where: { id: 'global' } });
 }
 
-async function ocrPdfWithClaude(buffer: Buffer): Promise<string> {
+async function ocrPdfWithClaude(buffer: Buffer): Promise<OcrResult> {
   const settings = await getSettings();
-  if (!settings?.anthropicApiKey) return '';
+  if (!settings?.anthropicApiKey) return { text: '', model: PDF_OCR_MODEL, inputTokens: 0, outputTokens: 0 };
   try {
     const anthropic = new Anthropic({ apiKey: decrypt(settings.anthropicApiKey) });
     const response = await anthropic.messages.create({
@@ -45,16 +53,21 @@ async function ocrPdfWithClaude(buffer: Buffer): Promise<string> {
       ],
     });
     const block = response.content[0];
-    return block.type === 'text' ? block.text : '';
+    return {
+      text: block.type === 'text' ? block.text : '',
+      model: PDF_OCR_MODEL,
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    };
   } catch (err) {
     console.error('Claude PDF OCR error:', err);
-    return '';
+    return { text: '', model: PDF_OCR_MODEL, inputTokens: 0, outputTokens: 0 };
   }
 }
 
-async function ocrImageWithOpenAI(buffer: Buffer, mimeType: string): Promise<string> {
+async function ocrImageWithOpenAI(buffer: Buffer, mimeType: string): Promise<OcrResult> {
   const settings = await getSettings();
-  if (!settings?.openaiApiKey) return '';
+  if (!settings?.openaiApiKey) return { text: '', model: IMAGE_OCR_MODEL, inputTokens: 0, outputTokens: 0 };
   try {
     const openai = new OpenAI({ apiKey: decrypt(settings.openaiApiKey) });
     const base64 = buffer.toString('base64');
@@ -77,16 +90,21 @@ async function ocrImageWithOpenAI(buffer: Buffer, mimeType: string): Promise<str
         },
       ],
     });
-    return response.choices[0]?.message?.content ?? '';
+    return {
+      text: response.choices[0]?.message?.content ?? '',
+      model: IMAGE_OCR_MODEL,
+      inputTokens: response.usage?.prompt_tokens ?? 0,
+      outputTokens: response.usage?.completion_tokens ?? 0,
+    };
   } catch (err) {
     console.error('OpenAI image OCR error:', err);
-    return '';
+    return { text: '', model: IMAGE_OCR_MODEL, inputTokens: 0, outputTokens: 0 };
   }
 }
 
-async function ocrImageWithClaude(buffer: Buffer, mimeType: string): Promise<string> {
+async function ocrImageWithClaude(buffer: Buffer, mimeType: string): Promise<OcrResult> {
   const settings = await getSettings();
-  if (!settings?.anthropicApiKey) return '';
+  if (!settings?.anthropicApiKey) return { text: '', model: PDF_OCR_MODEL, inputTokens: 0, outputTokens: 0 };
   try {
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const mediaType = validTypes.includes(mimeType) ? mimeType : 'image/jpeg';
@@ -115,14 +133,19 @@ async function ocrImageWithClaude(buffer: Buffer, mimeType: string): Promise<str
       ],
     });
     const block = response.content[0];
-    return block.type === 'text' ? block.text : '';
+    return {
+      text: block.type === 'text' ? block.text : '',
+      model: PDF_OCR_MODEL,
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+    };
   } catch (err) {
     console.error('Claude image OCR error:', err);
-    return '';
+    return { text: '', model: PDF_OCR_MODEL, inputTokens: 0, outputTokens: 0 };
   }
 }
 
-async function extractText(buffer: Buffer, mimeType: string, filename: string): Promise<string> {
+async function extractText(buffer: Buffer, mimeType: string, filename: string): Promise<OcrResult | null> {
   try {
     // --- PDF ---
     if (mimeType === 'application/pdf') {
@@ -131,7 +154,7 @@ async function extractText(buffer: Buffer, mimeType: string, filename: string): 
         const pdfParse = (await import('pdf-parse')).default;
         const data = await pdfParse(buffer);
         const text = data.text?.trim() ?? '';
-        if (text.length > 100) return text;
+        if (text.length > 100) return { text, model: '', inputTokens: 0, outputTokens: 0 };
       } catch (err) {
         console.error('pdf-parse error:', err);
       }
@@ -146,25 +169,25 @@ async function extractText(buffer: Buffer, mimeType: string, filename: string): 
     ) {
       const mammoth = await import('mammoth');
       const result = await mammoth.extractRawText({ buffer });
-      return result.value;
+      return { text: result.value, model: '', inputTokens: 0, outputTokens: 0 };
     }
 
     // --- TXT / MD ---
     if (mimeType === 'text/plain' || filename.endsWith('.txt') || filename.endsWith('.md')) {
-      return buffer.toString('utf-8');
+      return { text: buffer.toString('utf-8'), model: '', inputTokens: 0, outputTokens: 0 };
     }
 
     // --- Imagens (PNG, JPG, WEBP, GIF) ---
     // Tenta OpenAI gpt-4o-mini primeiro (mais barato), depois Claude Haiku como fallback
     if (mimeType.startsWith('image/')) {
-      const text = await ocrImageWithOpenAI(buffer, mimeType);
-      if (text) return text;
+      const result = await ocrImageWithOpenAI(buffer, mimeType);
+      if (result.text) return result;
       return await ocrImageWithClaude(buffer, mimeType);
     }
   } catch (err) {
     console.error('Text extraction error:', err);
   }
-  return '';
+  return null;
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -194,7 +217,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   await mkdir(uploadDir, { recursive: true });
   await writeFile(join(uploadDir, filename), buffer);
 
-  const extractedText = await extractText(buffer, file.type, file.name);
+  const ocr = await extractText(buffer, file.type, file.name);
 
   const document = await prisma.document.create({
     data: {
@@ -202,10 +225,26 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       filename,
       mimeType: file.type,
       size: file.size,
-      extractedText: extractedText || null,
+      extractedText: ocr?.text || null,
       projectId: params.id,
     },
   });
+
+  // Save token usage when OCR was used (model is set and tokens > 0)
+  if (ocr && ocr.model && ocr.inputTokens + ocr.outputTokens > 0) {
+    const cost = calculateCost(ocr.model, ocr.inputTokens, ocr.outputTokens);
+    await prisma.documentUsage.create({
+      data: {
+        documentId: document.id,
+        projectId: params.id,
+        userId: project.userId,
+        model: ocr.model,
+        inputTokens: ocr.inputTokens,
+        outputTokens: ocr.outputTokens,
+        cost,
+      },
+    });
+  }
 
   return NextResponse.json(document, { status: 201 });
 }

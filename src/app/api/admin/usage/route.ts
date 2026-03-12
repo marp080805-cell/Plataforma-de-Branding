@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
   const dateFilter = getDateFilter(period, startDate, endDate);
   const dateWhere = dateFilter ? { createdAt: dateFilter } : {};
 
+  // ── Chat messages ──
   const messages = await prisma.message.findMany({
     where: {
       role: 'assistant',
@@ -71,7 +72,23 @@ export async function GET(req: NextRequest) {
     },
   });
 
+  // ── OCR document usages ──
+  const ocrUsages = await prisma.documentUsage.findMany({
+    where: { ...dateWhere },
+    select: {
+      model: true,
+      inputTokens: true,
+      outputTokens: true,
+      cost: true,
+      createdAt: true,
+      projectId: true,
+      userId: true,
+      project: { select: { name: true, user: { select: { name: true, email: true } } } },
+    },
+  });
+
   let totalInput = 0, totalOutput = 0, totalCost = 0;
+  let ocrTotalInput = 0, ocrTotalOutput = 0, ocrTotalCost = 0;
 
   const userMap = new Map<string, {
     userId: string; name: string; email: string; tokenLimitMonthly: number | null;
@@ -88,6 +105,13 @@ export async function GET(req: NextRequest) {
     inputTokens: number; outputTokens: number; cost: number; messages: number;
   }>();
 
+  // By-model map (chat + OCR combined)
+  const modelMap = new Map<string, {
+    model: string;
+    inputTokens: number; outputTokens: number; cost: number; requests: number;
+    isOcr: boolean;
+  }>();
+
   const dailyMap = new Map<string, { date: string; inputTokens: number; outputTokens: number; cost: number }>();
 
   // Drill-down: userId -> projectId -> data
@@ -102,6 +126,7 @@ export async function GET(req: NextRequest) {
     inputTokens: number; outputTokens: number; cost: number; messages: number;
   }>>();
 
+  // ── Process chat messages ──
   for (const msg of messages) {
     const inp = msg.inputTokens || 0;
     const out = msg.outputTokens || 0;
@@ -150,6 +175,13 @@ export async function GET(req: NextRequest) {
       agentMap.set(aid, a);
     }
 
+    // By model (chat)
+    if (model) {
+      const m = modelMap.get(model) ?? { model, inputTokens: 0, outputTokens: 0, cost: 0, requests: 0, isOcr: false };
+      m.inputTokens += inp; m.outputTokens += out; m.cost += cost; m.requests += 1;
+      modelMap.set(model, m);
+    }
+
     // User -> Projects
     if (!userProjectsMap.has(uid)) userProjectsMap.set(uid, new Map());
     const uProjs = userProjectsMap.get(uid)!;
@@ -179,6 +211,43 @@ export async function GET(req: NextRequest) {
       const dateKey = msg.createdAt.toISOString().slice(0, 10);
       const d = dailyMap.get(dateKey) ?? { date: dateKey, inputTokens: 0, outputTokens: 0, cost: 0 };
       d.inputTokens += inp; d.outputTokens += out; d.cost += cost;
+      dailyMap.set(dateKey, d);
+    }
+  }
+
+  // ── Process OCR usages ──
+  // OCR model map for the OCR breakdown tab
+  const ocrModelMap = new Map<string, {
+    model: string; inputTokens: number; outputTokens: number; cost: number; files: number;
+  }>();
+
+  for (const ocr of ocrUsages) {
+    ocrTotalInput += ocr.inputTokens;
+    ocrTotalOutput += ocr.outputTokens;
+    ocrTotalCost += ocr.cost;
+
+    // Also add to global totals
+    totalInput += ocr.inputTokens;
+    totalOutput += ocr.outputTokens;
+    totalCost += ocr.cost;
+
+    // OCR model breakdown
+    const key = `ocr:${ocr.model}`;
+    const om = ocrModelMap.get(ocr.model) ?? { model: ocr.model, inputTokens: 0, outputTokens: 0, cost: 0, files: 0 };
+    om.inputTokens += ocr.inputTokens; om.outputTokens += ocr.outputTokens; om.cost += ocr.cost; om.files += 1;
+    ocrModelMap.set(ocr.model, om);
+
+    // Merge into global model map (mark as OCR-capable model)
+    const mKey = ocr.model;
+    const m = modelMap.get(mKey) ?? { model: mKey, inputTokens: 0, outputTokens: 0, cost: 0, requests: 0, isOcr: false };
+    m.inputTokens += ocr.inputTokens; m.outputTokens += ocr.outputTokens; m.cost += ocr.cost; m.requests += ocr.cost > 0 ? 1 : 0;
+    modelMap.set(mKey, m);
+
+    // Daily (OCR)
+    if (dateFilter) {
+      const dateKey = ocr.createdAt.toISOString().slice(0, 10);
+      const d = dailyMap.get(dateKey) ?? { date: dateKey, inputTokens: 0, outputTokens: 0, cost: 0 };
+      d.inputTokens += ocr.inputTokens; d.outputTokens += ocr.outputTokens; d.cost += ocr.cost;
       dailyMap.set(dateKey, d);
     }
   }
@@ -238,10 +307,16 @@ export async function GET(req: NextRequest) {
       totalTokens: totalInput + totalOutput,
       totalCost,
       totalMessages: messages.length,
+      ocrInputTokens: ocrTotalInput,
+      ocrOutputTokens: ocrTotalOutput,
+      ocrCost: ocrTotalCost,
+      ocrFiles: ocrUsages.length,
     },
     byUser,
     byProject: Array.from(projectMap.values()).sort((a, b) => b.cost - a.cost),
     byAgent: Array.from(agentMap.values()).sort((a, b) => b.cost - a.cost),
+    byModel: Array.from(modelMap.values()).sort((a, b) => b.cost - a.cost),
+    byOcrModel: Array.from(ocrModelMap.values()).sort((a, b) => b.cost - a.cost),
     userProjects,
     projectAgents,
     daily: Array.from(dailyMap.values()).sort((a, b) => a.date.localeCompare(b.date)),

@@ -3,7 +3,7 @@
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Zap, Settings, Users, Bot, LogOut, ChevronDown } from 'lucide-react';
+import { Zap, Settings, Users, Bot, LogOut, ChevronDown, BarChart2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,6 +83,12 @@ export function Header() {
                       <Link href="/admin/settings" className="cursor-pointer">
                         <Settings className="w-4 h-4 mr-2 opacity-60" />
                         Configurações
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin/usage" className="cursor-pointer">
+                        <BarChart2 className="w-4 h-4 mr-2 opacity-60" />
+                        Uso e Custos
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

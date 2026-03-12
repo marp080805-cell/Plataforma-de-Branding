@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Users, FolderOpen, Bot, DollarSign, Zap, ArrowUpDown, ChevronRight, ChevronDown, Calendar } from 'lucide-react';
+import { TrendingUp, Users, FolderOpen, Bot, DollarSign, Zap, ArrowUpDown, ChevronRight, ChevronDown, Calendar, FileSearch, Cpu } from 'lucide-react';
 import { formatTokens, formatCost } from '@/lib/pricing';
 
 type Period = 'month' | '30d' | '7d' | 'all' | 'custom';
@@ -12,6 +12,10 @@ interface Summary {
   totalTokens: number;
   totalCost: number;
   totalMessages: number;
+  ocrInputTokens: number;
+  ocrOutputTokens: number;
+  ocrCost: number;
+  ocrFiles: number;
 }
 
 interface UserRow {
@@ -46,11 +50,29 @@ interface AgentRow {
   messages: number;
 }
 
+interface ModelRow {
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  cost: number;
+  requests: number;
+}
+
+interface OcrModelRow {
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  cost: number;
+  files: number;
+}
+
 interface UsageData {
   summary: Summary;
   byUser: UserRow[];
   byProject: ProjectRow[];
   byAgent: AgentRow[];
+  byModel: ModelRow[];
+  byOcrModel: OcrModelRow[];
   userProjects: Record<string, ProjectRow[]>;
   projectAgents: Record<string, AgentRow[]>;
   period: string;
@@ -101,7 +123,7 @@ export default function UsagePage() {
   const [endDate, setEndDate] = useState('');
   const [data, setData] = useState<UsageData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<'users' | 'projects' | 'agents'>('users');
+  const [tab, setTab] = useState<'users' | 'projects' | 'agents' | 'models' | 'ocr'>('users');
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
 
@@ -147,6 +169,8 @@ export default function UsagePage() {
 
   const s = data?.summary;
   const hasData = (data?.byUser || []).length > 0;
+  const chatCost = (s?.totalCost || 0) - (s?.ocrCost || 0);
+  const chatTokens = (s?.totalTokens || 0) - (s?.ocrInputTokens || 0) - (s?.ocrOutputTokens || 0);
 
   return (
     <div className="space-y-6">
@@ -209,25 +233,25 @@ export default function UsagePage() {
           },
           {
             icon: DollarSign,
-            label: 'Custo Estimado',
+            label: 'Custo Total',
             value: loading ? '—' : `$${(s?.totalCost || 0).toFixed(4)}`,
-            sub: 'USD',
+            sub: loading ? 'USD' : `Chat $${chatCost.toFixed(4)} · OCR $${(s?.ocrCost || 0).toFixed(4)}`,
             color: '#16a34a',
           },
           {
             icon: ArrowUpDown,
             label: 'Respostas',
             value: loading ? '—' : String(s?.totalMessages || 0),
-            sub: 'mensagens do assistente',
+            sub: loading ? '' : `+ ${s?.ocrFiles || 0} arquivos OCR`,
             color: '#7c3aed',
           },
           {
             icon: TrendingUp,
             label: 'Custo Médio',
             value: loading ? '—' : s?.totalMessages
-              ? formatCost(s.totalCost / s.totalMessages)
+              ? formatCost(chatCost / s.totalMessages)
               : '$0',
-            sub: 'por resposta',
+            sub: 'por resposta de chat',
             color: '#b45309',
           },
         ].map((card) => (
@@ -244,18 +268,39 @@ export default function UsagePage() {
         ))}
       </div>
 
+      {/* OCR banner (shown only when there's OCR cost) */}
+      {!loading && (s?.ocrCost || 0) > 0 && (
+        <div className="flex items-center gap-3 bg-[#0d1515] border border-white/[0.07] rounded-xl px-5 py-3.5">
+          <FileSearch className="w-4 h-4 text-[#5a9e8c] flex-shrink-0" />
+          <div className="flex-1 text-xs text-[#5a8280]">
+            <span className="text-[#8ab0ae] font-medium">OCR de documentos</span>
+            {' '}— {s?.ocrFiles} arquivo{(s?.ocrFiles || 0) !== 1 ? 's' : ''} processado{(s?.ocrFiles || 0) !== 1 ? 's' : ''} com IA (PDF e imagens).
+            {' '}Tokens: <span className="text-[#7a9e9c]">{formatTokens((s?.ocrInputTokens || 0) + (s?.ocrOutputTokens || 0))}</span>
+            {' '}· Custo: <span className="text-[#34d399]">${(s?.ocrCost || 0).toFixed(4)}</span>
+          </div>
+          <button
+            onClick={() => setTab('ocr')}
+            className="text-xs text-[#4a7070] hover:text-[#76c0bc] transition-colors whitespace-nowrap"
+          >
+            Ver detalhes →
+          </button>
+        </div>
+      )}
+
       {/* Breakdown tabs */}
       <div className="bg-[#0d1515] rounded-2xl border border-white/[0.07] overflow-hidden">
-        <div className="flex border-b border-white/[0.07]">
+        <div className="flex border-b border-white/[0.07] overflow-x-auto">
           {([
             { key: 'users', icon: Users, label: 'Por Especialista' },
             { key: 'projects', icon: FolderOpen, label: 'Por Projeto' },
             { key: 'agents', icon: Bot, label: 'Por Agente' },
+            { key: 'models', icon: Cpu, label: 'Por Modelo' },
+            { key: 'ocr', icon: FileSearch, label: 'OCR Docs' },
           ] as const).map(({ key, icon: Icon, label }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`flex items-center gap-2 px-5 py-3.5 text-xs font-medium transition-all border-b-2 ${
+              className={`flex items-center gap-2 px-5 py-3.5 text-xs font-medium transition-all border-b-2 whitespace-nowrap ${
                 tab === key
                   ? 'border-[#176968] text-[#76c0bc] bg-[#176968]/[0.06]'
                   : 'border-transparent text-[#5a8280] hover:text-[#c0d8d6]'
@@ -265,7 +310,7 @@ export default function UsagePage() {
               {label}
             </button>
           ))}
-          <div className="ml-auto flex items-center px-4">
+          <div className="ml-auto flex items-center px-4 flex-shrink-0">
             {tab === 'users' && hasData && (
               <span className="text-[10px] text-[#3a6060]">Clique no especialista para expandir projetos e agentes</span>
             )}
@@ -452,12 +497,124 @@ export default function UsagePage() {
               </table>
             )}
 
+            {/* ── POR MODELO (chat + OCR combinados) ── */}
+            {tab === 'models' && (
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-white/[0.05]">
+                    <th className="text-left text-[#4a7070] font-medium px-5 py-3">Modelo</th>
+                    <th className="text-right text-[#4a7070] font-medium px-4 py-3">Tokens Entrada</th>
+                    <th className="text-right text-[#4a7070] font-medium px-4 py-3">Tokens Saída</th>
+                    <th className="text-right text-[#4a7070] font-medium px-4 py-3">Total Tokens</th>
+                    <th className="text-right text-[#4a7070] font-medium px-4 py-3">Custo Total</th>
+                    <th className="text-right text-[#4a7070] font-medium px-4 py-3">% do Custo</th>
+                    <th className="text-right text-[#4a7070] font-medium px-4 py-3">Requests</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(data?.byModel || []).length === 0 ? (
+                    <tr><td colSpan={7} className="px-5 py-8 text-center text-[#4a7070]">Nenhum dado no período</td></tr>
+                  ) : (data?.byModel || []).map((m) => {
+                    const pct = s?.totalCost ? (m.cost / s.totalCost) * 100 : 0;
+                    return (
+                      <tr key={m.model} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
+                        <td className="px-5 py-3">
+                          <span className="font-mono text-[#c0d8d6] bg-white/[0.04] px-2 py-0.5 rounded">{m.model}</span>
+                        </td>
+                        <td className="px-4 py-3 text-right text-[#7a9e9c]">{formatTokens(m.inputTokens)}</td>
+                        <td className="px-4 py-3 text-right text-[#7a9e9c]">{formatTokens(m.outputTokens)}</td>
+                        <td className="px-4 py-3 text-right text-[#c0d8d6] font-medium">{formatTokens(m.inputTokens + m.outputTokens)}</td>
+                        <td className="px-4 py-3 text-right text-[#34d399] font-medium">${m.cost.toFixed(4)}</td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="w-16 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-[#176968]" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="text-[#5a8280] w-10 text-right">{pct.toFixed(1)}%</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right text-[#7a9e9c]">{m.requests}</td>
+                      </tr>
+                    );
+                  })}
+                  {(data?.byModel || []).length > 0 && (
+                    <tr className="border-t border-white/[0.08] bg-[#0d1a1a]">
+                      <td className="px-5 py-3 text-[#6a9090] font-semibold text-xs">TOTAL</td>
+                      <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{formatTokens(s?.totalInputTokens || 0)}</td>
+                      <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{formatTokens(s?.totalOutputTokens || 0)}</td>
+                      <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{formatTokens(s?.totalTokens || 0)}</td>
+                      <td className="px-4 py-3 text-right text-[#34d399] font-semibold text-xs">${(s?.totalCost || 0).toFixed(4)}</td>
+                      <td className="px-4 py-3 text-right text-[#5a8280] text-xs">100%</td>
+                      <td className="px-4 py-3" />
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+
+            {/* ── OCR DE DOCUMENTOS ── */}
+            {tab === 'ocr' && (
+              <div>
+                {(data?.byOcrModel || []).length === 0 ? (
+                  <div className="px-5 py-10 text-center text-[#4a7070] text-sm">
+                    <FileSearch className="w-8 h-8 mx-auto mb-3 opacity-30" />
+                    Nenhum arquivo OCR processado no período
+                  </div>
+                ) : (
+                  <>
+                    <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+                      <FileSearch className="w-3.5 h-3.5 text-[#5a9e8c]" />
+                      <span className="text-xs text-[#5a8280]">
+                        Tokens consumidos ao processar PDFs e imagens com IA para extração de texto.
+                        {' '}PDFs usam <span className="font-mono text-[#7a9e9c]">claude-haiku-4-5</span>,
+                        {' '}imagens usam <span className="font-mono text-[#7a9e9c]">gpt-4o-mini</span>.
+                      </span>
+                    </div>
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b border-white/[0.05]">
+                          <th className="text-left text-[#4a7070] font-medium px-5 py-3">Modelo OCR</th>
+                          <th className="text-right text-[#4a7070] font-medium px-4 py-3">Tokens Entrada</th>
+                          <th className="text-right text-[#4a7070] font-medium px-4 py-3">Tokens Saída</th>
+                          <th className="text-right text-[#4a7070] font-medium px-4 py-3">Total Tokens</th>
+                          <th className="text-right text-[#4a7070] font-medium px-4 py-3">Custo</th>
+                          <th className="text-right text-[#4a7070] font-medium px-4 py-3">Arquivos</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(data?.byOcrModel || []).map((m) => (
+                          <tr key={m.model} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
+                            <td className="px-5 py-3">
+                              <span className="font-mono text-[#c0d8d6] bg-white/[0.04] px-2 py-0.5 rounded">{m.model}</span>
+                            </td>
+                            <td className="px-4 py-3 text-right text-[#7a9e9c]">{formatTokens(m.inputTokens)}</td>
+                            <td className="px-4 py-3 text-right text-[#7a9e9c]">{formatTokens(m.outputTokens)}</td>
+                            <td className="px-4 py-3 text-right text-[#c0d8d6] font-medium">{formatTokens(m.inputTokens + m.outputTokens)}</td>
+                            <td className="px-4 py-3 text-right text-[#34d399] font-medium">${m.cost.toFixed(4)}</td>
+                            <td className="px-4 py-3 text-right text-[#7a9e9c]">{m.files}</td>
+                          </tr>
+                        ))}
+                        <tr className="border-t border-white/[0.08] bg-[#0d1a1a]">
+                          <td className="px-5 py-3 text-[#6a9090] font-semibold text-xs">TOTAL OCR</td>
+                          <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{formatTokens(s?.ocrInputTokens || 0)}</td>
+                          <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{formatTokens(s?.ocrOutputTokens || 0)}</td>
+                          <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{formatTokens((s?.ocrInputTokens || 0) + (s?.ocrOutputTokens || 0))}</td>
+                          <td className="px-4 py-3 text-right text-[#34d399] font-semibold text-xs">${(s?.ocrCost || 0).toFixed(4)}</td>
+                          <td className="px-4 py-3 text-right text-[#c0d8d6] font-semibold text-xs">{s?.ocrFiles || 0}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </>
+                )}
+              </div>
+            )}
+
           </div>
         )}
       </div>
 
       <p className="text-xs text-[#3a5a58] text-center">
-        Custos calculados com base nos preços publicados dos provedores. Tokens de saída custam 3–5× mais que de entrada. Valores aproximados.
+        Custos calculados com base nos preços publicados dos provedores. Inclui tokens de chat e OCR de documentos. Valores aproximados.
       </p>
     </div>
   );
