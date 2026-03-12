@@ -22,8 +22,8 @@ interface UserRow {
   userId: string;
   name: string;
   email: string;
-  tokenLimitMonthly: number | null;
-  monthlyTokensUsed: number;
+  dailySpendLimit: number | null;
+  dailySpend: number;
   inputTokens: number;
   outputTokens: number;
   cost: number;
@@ -97,7 +97,7 @@ function LimitBar({ used, limit }: { used: number; limit: number | null }) {
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
       <span className="text-[#7a9e9c] text-xs whitespace-nowrap">
-        {formatTokens(used)} / {formatTokens(limit)}
+        ${used.toFixed(3)} / ${limit.toFixed(2)}/dia
       </span>
     </div>
   );
@@ -368,7 +368,7 @@ export default function UsagePage() {
                         <td className="px-4 py-3 text-right text-[#34d399]">${u.cost.toFixed(4)}</td>
                         <td className="px-4 py-3 text-right text-[#7a9e9c]">{u.messages}</td>
                         <td className="px-4 py-3">
-                          <LimitBar used={u.monthlyTokensUsed} limit={u.tokenLimitMonthly} />
+                          <LimitBar used={u.dailySpend} limit={u.dailySpendLimit} />
                         </td>
                       </tr>
 

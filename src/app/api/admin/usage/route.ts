@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
             select: {
               name: true,
               userId: true,
-              user: { select: { id: true, name: true, email: true, tokenLimitMonthly: true } },
+              user: { select: { id: true, name: true, email: true, dailySpendLimit: true } },
             },
           },
         },
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
   let ocrTotalInput = 0, ocrTotalOutput = 0, ocrTotalCost = 0;
 
   const userMap = new Map<string, {
-    userId: string; name: string; email: string; tokenLimitMonthly: number | null;
+    userId: string; name: string; email: string; dailySpendLimit: number | null;
     inputTokens: number; outputTokens: number; cost: number; messages: number;
   }>();
 
@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
       userId: uid,
       name: msg.conversation.project.user.name,
       email: msg.conversation.project.user.email,
-      tokenLimitMonthly: msg.conversation.project.user.tokenLimitMonthly,
+      dailySpendLimit: msg.conversation.project.user.dailySpendLimit,
       inputTokens: 0, outputTokens: 0, cost: 0, messages: 0,
     };
     u.inputTokens += inp; u.outputTokens += out; u.cost += cost; u.messages += 1;
@@ -254,35 +254,34 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Monthly usage per user for limit bars (always current month regardless of filter)
-  const startOfMonth = new Date();
-  startOfMonth.setDate(1);
-  startOfMonth.setHours(0, 0, 0, 0);
+  // Today's spend per user for daily limit bars (always today regardless of filter)
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
 
-  const monthlyRaw = await prisma.message.groupBy({
+  const dailyRaw = await prisma.message.groupBy({
     by: ['conversationId'],
-    where: { role: 'assistant', createdAt: { gte: startOfMonth } },
-    _sum: { tokenCount: true },
+    where: { role: 'assistant', createdAt: { gte: startOfDay } },
+    _sum: { cost: true },
   });
 
-  const convIds = monthlyRaw.map((r) => r.conversationId);
-  const convs = convIds.length
+  const dailyConvIds = dailyRaw.map((r) => r.conversationId);
+  const dailyConvs = dailyConvIds.length
     ? await prisma.conversation.findMany({
-        where: { id: { in: convIds } },
+        where: { id: { in: dailyConvIds } },
         select: { id: true, project: { select: { userId: true } } },
       })
     : [];
 
-  const monthlyByUser = new Map<string, number>();
-  for (const r of monthlyRaw) {
-    const conv = convs.find((c) => c.id === r.conversationId);
+  const dailySpendByUser = new Map<string, number>();
+  for (const r of dailyRaw) {
+    const conv = dailyConvs.find((c) => c.id === r.conversationId);
     if (!conv) continue;
     const uid = conv.project.userId;
-    monthlyByUser.set(uid, (monthlyByUser.get(uid) || 0) + (r._sum.tokenCount || 0));
+    dailySpendByUser.set(uid, (dailySpendByUser.get(uid) || 0) + (r._sum.cost || 0));
   }
 
   const byUser = Array.from(userMap.values())
-    .map((u) => ({ ...u, monthlyTokensUsed: monthlyByUser.get(u.userId) || 0 }))
+    .map((u) => ({ ...u, dailySpend: dailySpendByUser.get(u.userId) || 0 }))
     .sort((a, b) => b.cost - a.cost);
 
   // Serialize nested maps for JSON
