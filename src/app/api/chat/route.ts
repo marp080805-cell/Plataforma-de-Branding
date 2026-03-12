@@ -157,7 +157,13 @@ export async function POST(req: NextRequest) {
             model: conversation.agent.model,
             max_tokens: conversation.agent.maxTokens,
             temperature: conversation.agent.temperature,
-            system: finalSystemPrompt,
+            system: [
+              {
+                type: 'text',
+                text: finalSystemPrompt,
+                cache_control: { type: 'ephemeral' },
+              },
+            ],
             messages: history,
           });
 
