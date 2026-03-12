@@ -32,8 +32,10 @@ export function Header() {
               <Zap className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="font-semibold text-[#e0f0ef] text-base tracking-tight group-hover:text-white transition-colors">BrandMind</span>
-            <span className="text-[#5a8280] text-xs font-normal ml-1">by</span>
-            <Image src="/seuresultado.png" alt="seuresultado" width={110} height={22} className="ml-1 opacity-80 group-hover:opacity-100 transition-opacity" />
+            <span className="inline-flex items-center gap-0.5 ml-2">
+              <span className="text-[#4a7270] text-[9px] font-bold italic tracking-widest leading-none self-end mb-[1px]">by</span>
+              <Image src="/seuresultado.png" alt="seuresultado" width={88} height={17} className="opacity-45 group-hover:opacity-65 transition-opacity" style={{ filter: 'brightness(1.6)' }} />
+            </span>
           </Link>
 
           {/* Right side */}
