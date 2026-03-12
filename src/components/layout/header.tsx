@@ -25,16 +25,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#090e0e]/90 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 bg-[#176968] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(23,105,104,0.4)] group-hover:shadow-[0_0_20px_rgba(23,105,104,0.5)] transition-all duration-300">
+          <Link href="/dashboard" className="flex items-baseline gap-2.5 group">
+            <div className="w-7 h-7 bg-[#176968] rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(23,105,104,0.4)] group-hover:shadow-[0_0_20px_rgba(23,105,104,0.5)] transition-all duration-300 self-center">
               <Zap className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="font-semibold text-[#e0f0ef] text-base tracking-tight group-hover:text-white transition-colors">BrandMind</span>
-            <span className="inline-flex items-center gap-0.5 ml-2">
-              <span className="text-[#4a7270] text-[9px] font-bold italic tracking-widest leading-none self-end mb-[1px]">by</span>
-              <Image src="/seuresultado.png" alt="seuresultado" width={88} height={17} className="opacity-45 group-hover:opacity-65 transition-opacity" style={{ filter: 'brightness(1.6)' }} />
+            <span className="inline-flex items-baseline gap-[5px] ml-0.5">
+              <span className="text-[#6a9290] text-[11px] font-medium italic leading-none">by</span>
+              <Image src="/seuresultado.png" alt="seuresultado" width={100} height={19} className="opacity-50 group-hover:opacity-70 transition-opacity translate-y-[2px]" style={{ filter: 'brightness(1.5)' }} />
             </span>
           </Link>
 
