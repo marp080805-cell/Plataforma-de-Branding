@@ -3,79 +3,64 @@
 @tailwind utilities;
 
 @layer base {
-  /* ── LIGHT THEME (default) ──────────────────────────────────
-     Palette:
-       #D5D7C2 – bege claro       (background)
-       #161616 – quase preto      (foreground)
-       #000000 – preto
-       #A5BBAB – verde-sage claro (muted)
-       #76A095 – verde-sage médio (accent)
-       #47847E – verde-teal       (secondary)
-       #176968 – teal profundo    (primary / Pantone 4165 C)
+  /* ── LIGHT THEME ────────────────────────────────────────────
+     Background: #D5D7C2 (beige quente)
+     Cards:      #FFFFFF (branco — contraste máximo no beige)
+     Text:       #111111 (near-black)
+     Accent:     #176968 (teal Pantone 4165 C)
   ─────────────────────────────────────────────────────────── */
   :root {
     --background: 66 15% 80%;          /* #D5D7C2 */
-    --foreground: 0 0% 9%;             /* #161616 */
-    --card: 66 20% 90%;                /* lighter beige card */
-    --card-foreground: 0 0% 9%;
-    --popover: 66 20% 93%;
-    --popover-foreground: 0 0% 9%;
+    --foreground: 0 0% 7%;             /* #111111 */
+    --card: 0 0% 100%;                 /* #ffffff */
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
     --primary: 179 64% 25%;            /* #176968 */
     --primary-foreground: 0 0% 100%;
     --secondary: 175 30% 40%;          /* #47847E */
     --secondary-foreground: 0 0% 100%;
-    --muted: 168 20% 85%;
-    --muted-foreground: 0 0% 30%;
+    --muted: 66 10% 91%;               /* warm off-white */
+    --muted-foreground: 0 0% 40%;      /* #666 — legível */
     --accent: 168 17% 55%;             /* #76A095 */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 70% 52%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 168 17% 65%;
-    --input: 66 15% 73%;
-    --ring: 179 64% 25%;               /* #176968 */
+    --border: 66 10% 72%;              /* warm gray border */
+    --input: 0 0% 97%;                 /* quase branco */
+    --ring: 179 64% 25%;
     --radius: 0.75rem;
-
-    /* Surface extras */
-    --surface-1: 66 18% 87%;
-    --surface-2: 66 20% 92%;
-    --surface-hover: 168 15% 78%;
-    --header-bg: 66 15% 77%;
   }
 
-  /* ── DARK THEME ─────────────────────────────────────────── */
+  /* ── DARK THEME — near-black neutro (ZERO tinte esverdeado) ─
+     A cor teal (#176968) aparece APENAS em elementos interativos
+     (botões, ícones, accents). Todas as superfícies são neutras.
+  ─────────────────────────────────────────────────────────── */
   .dark {
-    --background: 174 45% 4%;          /* #060d0c ≈ #080d0d */
-    --foreground: 174 30% 88%;         /* #d0eceb ≈ #e0f0ef */
-    --card: 174 38% 7%;                /* #0c1817 ≈ #0d1515 */
-    --card-foreground: 174 30% 88%;
-    --popover: 174 38% 8%;
-    --popover-foreground: 174 30% 88%;
+    --background: 0 0% 4%;             /* #0a0a0a — preto puro */
+    --foreground: 0 0% 93%;            /* #ededed */
+    --card: 0 0% 8%;                   /* #141414 */
+    --card-foreground: 0 0% 93%;
+    --popover: 0 0% 9%;                /* #171717 */
+    --popover-foreground: 0 0% 93%;
     --primary: 179 64% 25%;            /* #176968 */
     --primary-foreground: 0 0% 100%;
     --secondary: 175 30% 40%;          /* #47847E */
     --secondary-foreground: 0 0% 100%;
-    --muted: 174 30% 12%;
-    --muted-foreground: 174 15% 52%;   /* #6a9490 */
+    --muted: 0 0% 12%;                 /* #1e1e1e */
+    --muted-foreground: 0 0% 55%;      /* #8c8c8c */
     --accent: 168 17% 55%;             /* #76A095 */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 60% 45%;
+    --destructive: 0 63% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 174 30% 13%;
-    --input: 174 38% 8%;
+    --border: 0 0% 15%;                /* #262626 */
+    --input: 0 0% 10%;                 /* #1a1a1a */
     --ring: 179 64% 25%;
-
-    /* Surface extras */
-    --surface-1: 174 35% 9%;
-    --surface-2: 174 30% 11%;
-    --surface-hover: 174 30% 14%;
-    --header-bg: 174 45% 3.5%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
@@ -85,159 +70,86 @@
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(23, 105, 104, 0.3);
-  border-radius: 99px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(23, 105, 104, 0.5);
-}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(23,105,104,0.3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(23,105,104,0.5); }
 
 /* ─── Selection ─────────────────────────────────────────────── */
-::selection {
-  background: rgba(23, 105, 104, 0.25);
-  color: #161616;
-}
-.dark ::selection {
-  color: #D5D7C2;
-}
+::selection { background: rgba(23,105,104,0.2); color: inherit; }
 
-/* ─── Markdown content (always dark bg – agent bubbles) ─────── */
-.markdown-content {
-  @apply text-sm leading-relaxed;
-}
-.markdown-content h1 {
-  @apply text-xl font-bold mb-4 mt-6;
-  color: #D5D7C2;
-}
-.markdown-content h2 {
-  @apply text-lg font-bold mb-3 mt-5;
-  color: #D5D7C2;
-}
-.markdown-content h3 {
-  @apply text-base font-semibold mb-2 mt-4;
-  color: #76A095;
-}
-.markdown-content p {
-  @apply mb-3;
-  color: #c8cbb6;
-}
-.markdown-content ul {
-  @apply list-disc pl-5 mb-3 space-y-1;
-}
-.markdown-content ol {
-  @apply list-decimal pl-5 mb-3 space-y-1;
-}
-.markdown-content li {
-  color: #c8cbb6;
-}
+/* ─── Markdown (agent bubbles — always dark bg) ─────────────── */
+.markdown-content { @apply text-sm leading-relaxed; }
+.markdown-content h1 { @apply text-xl font-bold mb-4 mt-6; color: #D5D7C2; }
+.markdown-content h2 { @apply text-lg font-bold mb-3 mt-5; color: #D5D7C2; }
+.markdown-content h3 { @apply text-base font-semibold mb-2 mt-4; color: #76A095; }
+.markdown-content p { @apply mb-3; color: #c8cbb6; }
+.markdown-content ul { @apply list-disc pl-5 mb-3 space-y-1; }
+.markdown-content ol { @apply list-decimal pl-5 mb-3 space-y-1; }
+.markdown-content li { color: #c8cbb6; }
 .markdown-content code {
-  background: rgba(23, 105, 104, 0.2);
-  border: 1px solid rgba(23, 105, 104, 0.4);
+  background: rgba(23,105,104,0.2);
+  border: 1px solid rgba(23,105,104,0.4);
   @apply rounded px-1.5 py-0.5 text-xs font-mono;
   color: #76A095;
 }
 .markdown-content pre {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(71, 132, 126, 0.3);
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(71,132,126,0.3);
   @apply rounded-xl p-4 mb-3 overflow-x-auto;
 }
-.markdown-content pre code {
-  @apply bg-transparent p-0 border-0;
-  color: #c8cbb6;
-}
-.markdown-content blockquote {
-  border-left: 3px solid rgba(23, 105, 104, 0.6);
-  @apply pl-4 italic mb-3;
-  color: #76A095;
-}
-.markdown-content strong {
-  @apply font-semibold;
-  color: #D5D7C2;
-}
-.markdown-content em {
-  @apply italic;
-  color: #c8cbb6;
-}
-.markdown-content hr {
-  @apply my-4;
-  border-color: rgba(71, 132, 126, 0.3);
-}
-.markdown-content table {
-  @apply w-full border-collapse mb-3;
-}
+.markdown-content pre code { @apply bg-transparent p-0 border-0; color: #c8cbb6; }
+.markdown-content blockquote { border-left: 3px solid rgba(23,105,104,0.5); @apply pl-4 italic mb-3; color: #76A095; }
+.markdown-content strong { @apply font-semibold; color: #D5D7C2; }
+.markdown-content em { @apply italic; color: #c8cbb6; }
+.markdown-content hr { @apply my-4; border-color: rgba(71,132,126,0.2); }
+.markdown-content table { @apply w-full border-collapse mb-3; }
 .markdown-content th {
   @apply px-3 py-2 text-left text-xs font-semibold;
-  background: rgba(23, 105, 104, 0.2);
-  border: 1px solid rgba(71, 132, 126, 0.3);
+  background: rgba(23,105,104,0.15);
+  border: 1px solid rgba(71,132,126,0.3);
   color: #76A095;
 }
 .markdown-content td {
   @apply px-3 py-2 text-sm;
-  border: 1px solid rgba(71, 132, 126, 0.2);
+  border: 1px solid rgba(71,132,126,0.15);
   color: #c8cbb6;
 }
-.markdown-content a {
-  color: #47847E;
-  @apply underline underline-offset-2;
-}
-.markdown-content a:hover {
-  color: #76A095;
-}
+.markdown-content a { color: #47847E; @apply underline underline-offset-2; }
+.markdown-content a:hover { color: #76A095; }
 
 /* ─── Typing cursor ─────────────────────────────────────────── */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-.typing-cursor::after {
-  content: '▋';
-  animation: blink 1s infinite;
-  color: #176968;
-}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.typing-cursor::after { content:'▋'; animation:blink 1s infinite; color:#176968; }
 
 /* ─── Loading dots ──────────────────────────────────────────── */
 @keyframes bounce-dot {
-  0%, 80%, 100% { transform: scale(0); opacity: 0; }
-  40% { transform: scale(1); opacity: 1; }
+  0%,80%,100%{transform:scale(0);opacity:0}
+  40%{transform:scale(1);opacity:1}
 }
 .loading-dot {
   @apply inline-block w-1.5 h-1.5 rounded-full;
-  background: rgba(23, 105, 104, 0.6);
+  background: rgba(23,105,104,0.6);
   animation: bounce-dot 1.4s infinite ease-in-out both;
 }
-.loading-dot:nth-child(1) { animation-delay: -0.32s; }
-.loading-dot:nth-child(2) { animation-delay: -0.16s; }
-.loading-dot:nth-child(3) { animation-delay: 0s; }
+.loading-dot:nth-child(1){animation-delay:-0.32s}
+.loading-dot:nth-child(2){animation-delay:-0.16s}
+.loading-dot:nth-child(3){animation-delay:0s}
 
-/* ─── Glow utilities ────────────────────────────────────────── */
-.glow-primary {
-  box-shadow: 0 0 40px rgba(23, 105, 104, 0.2), 0 0 80px rgba(23, 105, 104, 0.08);
-}
-.glow-primary-sm {
-  box-shadow: 0 0 20px rgba(23, 105, 104, 0.15);
-}
-.border-subtle {
-  border-color: rgba(71, 132, 126, 0.2);
-}
+/* ─── Glow ──────────────────────────────────────────────────── */
+.glow-primary { box-shadow:0 0 40px rgba(23,105,104,0.2),0 0 80px rgba(23,105,104,0.08); }
+.glow-primary-sm { box-shadow:0 0 20px rgba(23,105,104,0.15); }
 
-/* ─── Glass card ────────────────────────────────────────────── */
+/* ─── Glass ─────────────────────────────────────────────────── */
 .glass {
-  background: rgba(213, 215, 194, 0.75);
+  background: rgba(255,255,255,0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(71, 132, 126, 0.2);
+  border: 1px solid rgba(0,0,0,0.07);
 }
 .dark .glass {
-  background: rgba(13, 21, 21, 0.75);
-  border: 1px solid rgba(71, 132, 126, 0.15);
+  background: rgba(20,20,20,0.85);
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
 /* ─── Gradient text ─────────────────────────────────────────── */
@@ -250,21 +162,17 @@
 
 /* ─── Shimmer skeleton ──────────────────────────────────────── */
 @keyframes shimmer {
-  from { background-position: -200% center; }
-  to { background-position: 200% center; }
+  from{background-position:-200% center}
+  to{background-position:200% center}
 }
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(71, 132, 126, 0.06) 25%,
-    rgba(71, 132, 126, 0.14) 50%,
-    rgba(71, 132, 126, 0.06) 75%
+    hsl(var(--muted)) 25%,
+    hsl(var(--border)) 50%,
+    hsl(var(--muted)) 75%
   );
   background-size: 200% auto;
   animation: shimmer 2s linear infinite;
   border-radius: var(--radius);
 }
-
-/* ─── Theme-aware surface classes ───────────────────────────── */
-.surface-1 { background: hsl(var(--surface-1)); }
-.surface-2 { background: hsl(var(--surface-2)); }

@@ -31,27 +31,14 @@ export default function AdminSettingsPage() {
     const body: Record<string, string> = {};
     if (anthropicKey) body.anthropicApiKey = anthropicKey;
     if (openaiKey) body.openaiApiKey = openaiKey;
-
-    await fetch('/api/admin/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    setSaving(false);
-    setAnthropicKey('');
-    setOpenaiKey('');
-    fetchSettings();
+    await fetch('/api/admin/settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    setSaving(false); setAnthropicKey(''); setOpenaiKey(''); fetchSettings();
   };
 
   const handleTest = async (provider: 'anthropic' | 'openai') => {
     setTesting(provider);
     setTestResults((prev) => ({ ...prev, [provider]: { success: false, message: 'Testando...' } }));
-    const res = await fetch('/api/admin/settings/test', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider }),
-    });
+    const res = await fetch('/api/admin/settings/test', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ provider }) });
     const data = await res.json();
     setTestResults((prev) => ({ ...prev, [provider]: data }));
     setTesting(null);
@@ -59,168 +46,132 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="mb-6">
-        <h1 className="text-lg font-semibold text-[#e0f0ef] tracking-tight">Configurações</h1>
-        <p className="text-[#4a7070] text-sm mt-0.5">Gerencie as API keys para os provedores de IA</p>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Configurações</h1>
+        <p className="text-muted-foreground text-sm mt-1">Gerencie as API keys para os provedores de IA</p>
       </div>
 
-      <div className="bg-[#0d1515] rounded-2xl border border-white/[0.07] p-6 space-y-6">
-        {/* Anthropic */}
-        <div className="space-y-3">
+      <div className="bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm">
+        {/* Anthropic section */}
+        <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#f59e0b]/[0.1] rounded-xl flex items-center justify-center border border-[#f59e0b]/[0.15]">
-                <Key className="w-4 h-4 text-[#fbbf24]" />
+              <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/20">
+                <Key className="w-4 h-4 text-amber-500" />
               </div>
               <div>
-                <h3 className="font-medium text-[#c8e8e6] text-sm">Anthropic (Claude)</h3>
-                <p className="text-xs text-[#4a7070]">Agentes configurados como "anthropic"</p>
+                <h3 className="font-semibold text-foreground text-sm">Anthropic (Claude)</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Agentes configurados como "anthropic"</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {hasAnthropicKey && (
-                <span className="flex items-center gap-1 text-xs text-[#34d399]">
-                  <CheckCircle className="w-3 h-3" />
-                  Ativa
+                <span className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
+                  <CheckCircle className="w-3.5 h-3.5" />Ativa
                 </span>
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleTest('anthropic')}
-                disabled={!hasAnthropicKey || testing === 'anthropic'}
-              >
-                {testing === 'anthropic' ? (
-                  <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                ) : null}
+              <Button variant="outline" size="sm" onClick={() => handleTest('anthropic')} disabled={!hasAnthropicKey || testing === 'anthropic'}>
+                {testing === 'anthropic' ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
                 Testar
               </Button>
             </div>
           </div>
 
           {testResults.anthropic && (
-            <div className={`text-xs p-2.5 rounded-xl flex items-center gap-2 ${
-              testResults.anthropic.success
-                ? 'bg-[#10b981]/[0.1] text-[#34d399] border border-[#10b981]/[0.2]'
-                : 'bg-[#c93030]/[0.1] text-[#ff8080] border border-[#c93030]/[0.2]'
-            }`}>
-              {testResults.anthropic.success
-                ? <CheckCircle className="w-3.5 h-3.5" />
-                : <XCircle className="w-3.5 h-3.5" />}
+            <div className={`text-xs p-3 rounded-xl flex items-center gap-2 ${testResults.anthropic.success
+              ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 dark:text-emerald-400'
+              : 'bg-destructive/10 text-destructive border border-destructive/20'}`}>
+              {testResults.anthropic.success ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
               {testResults.anthropic.message}
             </div>
           )}
 
           <div className="space-y-1.5">
-            <Label className="text-[#7a9e9c] text-xs">{hasAnthropicKey ? 'Substituir API Key' : 'API Key *'}</Label>
+            <Label className="text-muted-foreground text-xs">{hasAnthropicKey ? 'Substituir API Key' : 'API Key *'}</Label>
             <div className="relative">
-              <Input
-                type={showAnthropicKey ? 'text' : 'password'}
-                value={anthropicKey}
+              <Input type={showAnthropicKey ? 'text' : 'password'} value={anthropicKey}
                 onChange={(e) => setAnthropicKey(e.target.value)}
                 placeholder={hasAnthropicKey ? '••••••••••••••••• (já configurada)' : 'sk-ant-...'}
-                className="pr-10 font-mono text-xs"
-              />
-              <button
-                type="button"
-                onClick={() => setShowAnthropicKey(!showAnthropicKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3a5e5c] hover:text-[#7a9e9c] transition-colors"
-              >
+                className="pr-10 font-mono text-xs" />
+              <button type="button" onClick={() => setShowAnthropicKey(!showAnthropicKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                 {showAnthropicKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-xs text-[#3a5252]">
+            <p className="text-xs text-muted-foreground/60">
               Obtenha em{' '}
-              <a href="https://console.anthropic.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#176968] hover:text-[#47847E] transition-colors">
+              <a href="https://console.anthropic.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-secondary transition-colors underline underline-offset-2">
                 console.anthropic.com/api-keys
               </a>
             </p>
           </div>
         </div>
 
-        <hr className="border-white/[0.05]" />
+        <div className="h-px bg-border/50" />
 
-        {/* OpenAI */}
-        <div className="space-y-3">
+        {/* OpenAI section */}
+        <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#10b981]/[0.1] rounded-xl flex items-center justify-center border border-[#10b981]/[0.15]">
-                <Key className="w-4 h-4 text-[#34d399]" />
+              <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                <Key className="w-4 h-4 text-emerald-500" />
               </div>
               <div>
-                <h3 className="font-medium text-[#c8e8e6] text-sm">OpenAI (ChatGPT)</h3>
-                <p className="text-xs text-[#4a7070]">Opcional — necessário apenas para agentes GPT</p>
+                <h3 className="font-semibold text-foreground text-sm">OpenAI (ChatGPT)</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Opcional — necessário apenas para agentes GPT</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {hasOpenAIKey && (
-                <span className="flex items-center gap-1 text-xs text-[#34d399]">
-                  <CheckCircle className="w-3 h-3" />
-                  Ativa
+                <span className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
+                  <CheckCircle className="w-3.5 h-3.5" />Ativa
                 </span>
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleTest('openai')}
-                disabled={!hasOpenAIKey || testing === 'openai'}
-              >
-                {testing === 'openai' ? (
-                  <Loader2 className="w-3 h-3 animate-spin mr-1" />
-                ) : null}
+              <Button variant="outline" size="sm" onClick={() => handleTest('openai')} disabled={!hasOpenAIKey || testing === 'openai'}>
+                {testing === 'openai' ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
                 Testar
               </Button>
             </div>
           </div>
 
           {testResults.openai && (
-            <div className={`text-xs p-2.5 rounded-xl flex items-center gap-2 ${
-              testResults.openai.success
-                ? 'bg-[#10b981]/[0.1] text-[#34d399] border border-[#10b981]/[0.2]'
-                : 'bg-[#c93030]/[0.1] text-[#ff8080] border border-[#c93030]/[0.2]'
-            }`}>
-              {testResults.openai.success
-                ? <CheckCircle className="w-3.5 h-3.5" />
-                : <XCircle className="w-3.5 h-3.5" />}
+            <div className={`text-xs p-3 rounded-xl flex items-center gap-2 ${testResults.openai.success
+              ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 dark:text-emerald-400'
+              : 'bg-destructive/10 text-destructive border border-destructive/20'}`}>
+              {testResults.openai.success ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
               {testResults.openai.message}
             </div>
           )}
 
           <div className="space-y-1.5">
-            <Label className="text-[#7a9e9c] text-xs">{hasOpenAIKey ? 'Substituir API Key' : 'API Key'}</Label>
+            <Label className="text-muted-foreground text-xs">{hasOpenAIKey ? 'Substituir API Key' : 'API Key'}</Label>
             <div className="relative">
-              <Input
-                type={showOpenAIKey ? 'text' : 'password'}
-                value={openaiKey}
+              <Input type={showOpenAIKey ? 'text' : 'password'} value={openaiKey}
                 onChange={(e) => setOpenaiKey(e.target.value)}
                 placeholder={hasOpenAIKey ? '••••••••••••••••• (já configurada)' : 'sk-...'}
-                className="pr-10 font-mono text-xs"
-              />
-              <button
-                type="button"
-                onClick={() => setShowOpenAIKey(!showOpenAIKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3a5e5c] hover:text-[#7a9e9c] transition-colors"
-              >
+                className="pr-10 font-mono text-xs" />
+              <button type="button" onClick={() => setShowOpenAIKey(!showOpenAIKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                 {showOpenAIKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-xs text-[#3a5252]">
+            <p className="text-xs text-muted-foreground/60">
               Obtenha em{' '}
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-[#176968] hover:text-[#47847E] transition-colors">
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-secondary transition-colors underline underline-offset-2">
                 platform.openai.com/api-keys
               </a>
             </p>
           </div>
         </div>
 
-        <div className="pt-2 border-t border-white/[0.05]">
+        <div className="px-6 py-4 bg-muted/20 border-t border-border/50 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground/60">
+            API keys armazenadas com criptografia AES no banco de dados.
+          </p>
           <Button onClick={handleSave} disabled={saving || (!anthropicKey && !openaiKey)}>
             {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Salvar API Keys
           </Button>
-          <p className="text-xs text-[#3a5252] mt-2">
-            As API keys são armazenadas criptografadas no banco de dados.
-          </p>
         </div>
       </div>
     </div>

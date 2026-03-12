@@ -3,21 +3,25 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
       variant: {
-        default: 'bg-[#176968]/[0.15] text-[#76A095] border border-[#176968]/[0.25]',
-        secondary: 'bg-white/[0.06] text-[#90b0ae] border border-white/[0.08]',
-        destructive: 'bg-[#c93030]/[0.15] text-[#ff8080] border border-[#c93030]/[0.25]',
-        outline: 'text-[#90b0ae] border border-white/[0.1]',
-        anthropic: 'bg-[#f59e0b]/[0.12] text-[#fbbf24] border border-[#f59e0b]/[0.2]',
-        openai: 'bg-[#10b981]/[0.12] text-[#34d399] border border-[#10b981]/[0.2]',
+        default:
+          'bg-primary/10 text-primary border border-primary/20 dark:bg-primary/15 dark:text-[#5bbfbe] dark:border-primary/25',
+        secondary:
+          'bg-muted text-muted-foreground border border-border/60',
+        destructive:
+          'bg-destructive/10 text-destructive border border-destructive/20',
+        outline:
+          'text-muted-foreground border border-border/60',
+        anthropic:
+          'bg-amber-500/10 text-amber-600 border border-amber-500/20 dark:text-amber-400',
+        openai:
+          'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 dark:text-emerald-400',
       },
     },
-    defaultVariants: {
-      variant: 'default',
-    },
+    defaultVariants: { variant: 'default' },
   }
 );
 
