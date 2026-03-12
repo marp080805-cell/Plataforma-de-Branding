@@ -16,7 +16,7 @@ model User {
   role                String               @default("strategist")
   avatarColor         String               @default("#6366f1")
   isActive            Boolean              @default(true)
-  tokenLimitMonthly   Int?
+  dailySpendLimit     Float?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   projects            Project[]

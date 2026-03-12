@@ -20,7 +20,7 @@ interface User {
   role: string;
   avatarColor: string;
   isActive: boolean;
-  tokenLimitMonthly: number | null;
+  dailySpendLimit: number | null;
   createdAt: string;
   _count?: { projects: number };
 }
@@ -52,7 +52,7 @@ export default function AdminUsersPage() {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', password: '', role: 'strategist', avatarColor: '#176968',
-    tokenLimitMonthly: '' as string,
+    dailySpendLimit: '' as string,
   });
 
   useEffect(() => { fetchUsers(); }, []);
@@ -67,13 +67,13 @@ export default function AdminUsersPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ name: '', email: '', password: '', role: 'strategist', avatarColor: '#176968', tokenLimitMonthly: '' });
+    setForm({ name: '', email: '', password: '', role: 'strategist', avatarColor: '#176968', dailySpendLimit: '' });
     setShowForm(true);
   };
 
   const openEdit = (user: User) => {
     setEditing(user);
-    setForm({ name: user.name, email: user.email, password: '', role: user.role, avatarColor: user.avatarColor, tokenLimitMonthly: user.tokenLimitMonthly ? String(user.tokenLimitMonthly) : '' });
+    setForm({ name: user.name, email: user.email, password: '', role: user.role, avatarColor: user.avatarColor, dailySpendLimit: user.dailySpendLimit != null ? String(user.dailySpendLimit) : '' });
     setShowForm(true);
   };
 
@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
     setSaving(true);
     const payload = {
       ...form,
-      tokenLimitMonthly: form.tokenLimitMonthly ? parseInt(form.tokenLimitMonthly) : null,
+      dailySpendLimit: form.dailySpendLimit ? parseFloat(form.dailySpendLimit) : null,
     };
     if (editing) {
       await fetch(`/api/admin/users/${editing.id}`, {
@@ -255,15 +255,20 @@ export default function AdminUsersPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[#7a9e9c] text-xs">Limite mensal de tokens</Label>
-              <Input
-                type="number"
-                min="0"
-                value={form.tokenLimitMonthly}
-                onChange={(e) => setForm({ ...form, tokenLimitMonthly: e.target.value })}
-                placeholder="Ex: 500000 (deixe em branco para ilimitado)"
-              />
-              <p className="text-[#4a7070] text-[11px]">Deixe em branco para sem limite. Soma de tokens de entrada + saída por mês.</p>
+              <Label className="text-[#7a9e9c] text-xs">Limite de gasto diário (USD)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7070] text-sm select-none">$</span>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.dailySpendLimit}
+                  onChange={(e) => setForm({ ...form, dailySpendLimit: e.target.value })}
+                  placeholder="Ex: 2.00"
+                  className="pl-6"
+                />
+              </div>
+              <p className="text-[#4a7070] text-[11px]">Deixe em branco para sem limite. Renova à meia-noite — saldo não usado não acumula.</p>
             </div>
             <div className="space-y-2">
               <Label className="text-[#7a9e9c] text-xs">Cor do avatar</Label>

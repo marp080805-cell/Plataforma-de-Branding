@@ -39,30 +39,30 @@ export async function POST(req: NextRequest) {
     return new Response('Forbidden', { status: 403 });
   }
 
-  // Check monthly token limit for the project owner
+  // Check daily spend limit for the project owner (resets each calendar day, non-cumulative)
   const ownerId = conversation.project.userId;
   const owner = await prisma.user.findUnique({
     where: { id: ownerId },
-    select: { tokenLimitMonthly: true },
+    select: { dailySpendLimit: true },
   });
 
-  if (owner?.tokenLimitMonthly) {
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
+  if (owner?.dailySpendLimit) {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
     const usage = await prisma.message.aggregate({
       where: {
+        role: 'assistant',
         conversation: { project: { userId: ownerId } },
-        createdAt: { gte: startOfMonth },
+        createdAt: { gte: startOfDay },
       },
-      _sum: { tokenCount: true },
+      _sum: { cost: true },
     });
 
-    const used = usage._sum.tokenCount || 0;
-    if (used >= owner.tokenLimitMonthly) {
+    const spent = usage._sum.cost ?? 0;
+    if (spent >= owner.dailySpendLimit) {
       return new Response(
-        JSON.stringify({ error: 'Limite de tokens mensais atingido. Entre em contato com o administrador.' }),
+        JSON.stringify({ error: 'Limite de gasto diário atingido. O limite renova à meia-noite.' }),
         { status: 429, headers: { 'Content-Type': 'application/json' } }
       );
     }
