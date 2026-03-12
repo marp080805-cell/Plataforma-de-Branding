@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { decrypt } from '@/lib/encryption';
+import { calculateCost } from '@/lib/pricing';
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 
@@ -225,9 +226,10 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Save assistant response with token counts
+        // Save assistant response with token counts and cost at this point in time
         if (fullResponse) {
           const totalTokens = inputTokens + outputTokens;
+          const cost = calculateCost(conversation.agent.model, inputTokens, outputTokens);
           await prisma.message.create({
             data: {
               role: 'assistant',
@@ -236,6 +238,7 @@ export async function POST(req: NextRequest) {
               inputTokens: inputTokens || null,
               outputTokens: outputTokens || null,
               tokenCount: totalTokens || null,
+              cost: cost || null,
             },
           });
         }

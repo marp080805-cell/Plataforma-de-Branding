@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
       inputTokens: true,
       outputTokens: true,
       tokenCount: true,
+      cost: true,
       createdAt: true,
       conversation: {
         select: {
@@ -131,7 +132,8 @@ export async function GET(req: NextRequest) {
     const inp = msg.inputTokens || 0;
     const out = msg.outputTokens || 0;
     const model = msg.conversation.agent?.model || '';
-    const cost = calculateCost(model, inp, out);
+    // Use stored cost (captured at transaction time) — fall back to calculated for legacy records
+    const cost = msg.cost ?? calculateCost(model, inp, out);
 
     totalInput += inp;
     totalOutput += out;
