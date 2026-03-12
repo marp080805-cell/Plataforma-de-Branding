@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     where,
     include: {
       _count: { select: { documents: true, conversations: true } },
-      ...(isAdmin ? { user: { select: { id: true, name: true, avatarColor: true } } } : {}),
+      user: { select: { id: true, name: true, avatarColor: true } },
     },
     orderBy: { updatedAt: 'desc' },
   });

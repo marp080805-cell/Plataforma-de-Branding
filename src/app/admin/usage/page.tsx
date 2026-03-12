@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Users, FolderOpen, Bot, DollarSign, Zap, ArrowUpDown, ChevronRight, ChevronDown, Calendar, FileSearch, Cpu } from 'lucide-react';
+import { TrendingUp, Users, FolderOpen, Bot, DollarSign, Brain, ArrowUpDown, ChevronRight, ChevronDown, Calendar, FileSearch, Cpu } from 'lucide-react';
 import { formatTokens, formatCost } from '@/lib/pricing';
 
 type Period = 'month' | '30d' | '7d' | 'all' | 'custom';
@@ -226,7 +226,7 @@ export default function UsagePage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           {
-            icon: Zap,
+            icon: Brain,
             label: 'Total de Tokens',
             value: loading ? '—' : formatTokens(s?.totalTokens || 0),
             sub: loading ? '' : `↑ ${formatTokens(s?.totalInputTokens || 0)} entrada / ${formatTokens(s?.totalOutputTokens || 0)} saída`,

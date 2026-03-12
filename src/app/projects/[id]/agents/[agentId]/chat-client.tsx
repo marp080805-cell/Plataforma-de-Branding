@@ -327,9 +327,9 @@ export function ChatClient({
       </button>
 
       {/* Chat area */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#080d0d]">
+      <div className="flex-1 flex flex-col overflow-hidden bg-background">
         {/* Chat header */}
-        <div className="border-b border-white/[0.06] px-6 py-3 flex items-center justify-between flex-shrink-0 bg-[#090e0e]/60 backdrop-blur-sm">
+        <div className="border-b border-border/40 px-6 py-3 flex items-center justify-between flex-shrink-0 bg-background/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#176968]/[0.12] rounded-xl flex items-center justify-center text-[#76A095] border border-[#176968]/[0.2]">
               {getAgentIcon(agent.icon)}

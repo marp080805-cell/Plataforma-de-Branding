@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, FolderOpen, FileText, MoreVertical, Loader2, Calendar } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Plus, Search, FolderOpen, FileText, MoreVertical, Loader2, Calendar, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,6 +32,7 @@ interface Project {
   createdAt: string;
   updatedAt: string;
   _count: { documents: number; conversations: number };
+  user?: { id: string; name: string; avatarColor: string };
 }
 
 const PRESET_COLORS = [
@@ -40,6 +42,7 @@ const PRESET_COLORS = [
 ];
 
 export function DashboardClient() {
+  const { data: session } = useSession();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -107,12 +110,14 @@ export function DashboardClient() {
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const isAdmin = session?.user?.role === 'admin';
+
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-[#e0f0ef] tracking-tight">Projetos</h1>
-          <p className="text-[#4a6a68] text-sm mt-0.5">
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">Projetos</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">
             {projects.length} {projects.length === 1 ? 'projeto' : 'projetos'}
           </p>
         </div>
@@ -125,7 +130,7 @@ export function DashboardClient() {
       {/* Search */}
       {projects.length > 0 && (
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#3a5e5c]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
             placeholder="Buscar projetos..."
             value={search}
@@ -138,17 +143,17 @@ export function DashboardClient() {
       {/* Projects Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-5 h-5 animate-spin text-[#176968]" />
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-24">
-          <div className="w-14 h-14 bg-white/[0.04] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FolderOpen className="w-6 h-6 text-[#3a5e5c]" />
+          <div className="w-14 h-14 bg-muted/30 border border-border/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FolderOpen className="w-6 h-6 text-muted-foreground" />
           </div>
-          <h3 className="text-base font-medium text-[#c0d8d6] mb-1.5">
+          <h3 className="text-base font-medium text-foreground mb-1.5">
             {search ? 'Nenhum projeto encontrado' : 'Nenhum projeto ainda'}
           </h3>
-          <p className="text-[#4a7070] text-sm mb-6 max-w-xs mx-auto">
+          <p className="text-muted-foreground text-sm mb-6 max-w-xs mx-auto">
             {search
               ? 'Tente buscar por outro nome'
               : 'Organize seus clientes em projetos separados com agentes dedicados'}
@@ -165,7 +170,7 @@ export function DashboardClient() {
           {filtered.map((project) => (
             <div
               key={project.id}
-              className="bg-[#0d1515] border border-white/[0.07] rounded-2xl overflow-hidden hover:border-white/[0.13] transition-all duration-300 group"
+              className="bg-card border border-border/50 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-md transition-all duration-300 group"
             >
               {/* Color accent bar */}
               <div className="h-[3px] opacity-80" style={{ backgroundColor: project.color }} />
@@ -178,12 +183,12 @@ export function DashboardClient() {
                         className="w-2 h-2 rounded-full flex-shrink-0 opacity-80"
                         style={{ backgroundColor: project.color }}
                       />
-                      <h3 className="font-medium text-[#d8f0ee] group-hover:text-[#e8f8f7] transition-colors truncate text-sm">
+                      <h3 className="font-medium text-foreground group-hover:text-primary transition-colors truncate text-sm">
                         {project.name}
                       </h3>
                     </div>
                     {project.description && (
-                      <p className="text-[#4a7070] text-xs leading-relaxed pl-4.5">
+                      <p className="text-muted-foreground text-xs leading-relaxed pl-4.5">
                         {truncate(project.description, 75)}
                       </p>
                     )}
@@ -191,8 +196,8 @@ export function DashboardClient() {
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 rounded-lg hover:bg-white/[0.07] transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">
-                        <MoreVertical className="w-3.5 h-3.5 text-[#5a8280]" />
+                      <button className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">
+                        <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -201,7 +206,7 @@ export function DashboardClient() {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="!text-[#ff7070] hover:!bg-[#c93030]/[0.12]"
+                        className="!text-red-500"
                         onClick={() => setShowDelete(project)}
                       >
                         Excluir
@@ -210,7 +215,7 @@ export function DashboardClient() {
                   </DropdownMenu>
                 </div>
 
-                <div className="flex items-center gap-4 mt-4 pt-3.5 border-t border-white/[0.05] text-xs text-[#42605e]">
+                <div className="flex items-center gap-3 mt-4 pt-3.5 border-t border-border/40 text-xs text-muted-foreground flex-wrap">
                   <span className="flex items-center gap-1.5">
                     <FileText className="w-3 h-3" />
                     {project._count.documents} {project._count.documents === 1 ? 'doc' : 'docs'}
@@ -219,6 +224,26 @@ export function DashboardClient() {
                     <Calendar className="w-3 h-3" />
                     {formatDate(project.updatedAt)}
                   </span>
+                  {project.user && (isAdmin || project.user.id !== session?.user?.id) && (
+                    <span className="flex items-center gap-1.5 ml-auto">
+                      <div
+                        className="w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center"
+                        style={{ backgroundColor: project.user.avatarColor }}
+                        title={project.user.name}
+                      >
+                        <span className="text-white text-[7px] font-bold leading-none">
+                          {project.user.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="truncate max-w-[80px]">{project.user.name.split(' ')[0]}</span>
+                    </span>
+                  )}
+                  {project.user && !isAdmin && project.user.id === session?.user?.id && (
+                    <span className="flex items-center gap-1.5 ml-auto">
+                      <User className="w-3 h-3" />
+                      Você
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -234,7 +259,7 @@ export function DashboardClient() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[#7a9e9c] text-xs">Nome do projeto *</Label>
+              <Label className="text-muted-foreground text-xs">Nome do projeto *</Label>
               <Input
                 placeholder="Ex: Marca XYZ"
                 value={form.name}
@@ -243,7 +268,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[#7a9e9c] text-xs">Descrição (opcional)</Label>
+              <Label className="text-muted-foreground text-xs">Descrição (opcional)</Label>
               <Textarea
                 placeholder="Breve descrição do projeto..."
                 value={form.description}
@@ -252,7 +277,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#7a9e9c] text-xs">Cor de identificação</Label>
+              <Label className="text-muted-foreground text-xs">Cor de identificação</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -290,14 +315,14 @@ export function DashboardClient() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-[#7a9e9c] text-xs">Nome do projeto *</Label>
+              <Label className="text-muted-foreground text-xs">Nome do projeto *</Label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[#7a9e9c] text-xs">Descrição (opcional)</Label>
+              <Label className="text-muted-foreground text-xs">Descrição (opcional)</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -305,7 +330,7 @@ export function DashboardClient() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#7a9e9c] text-xs">Cor de identificação</Label>
+              <Label className="text-muted-foreground text-xs">Cor de identificação</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -341,9 +366,9 @@ export function DashboardClient() {
           <DialogHeader>
             <DialogTitle>Excluir Projeto</DialogTitle>
           </DialogHeader>
-          <p className="text-[#6a9492] text-sm">
+          <p className="text-muted-foreground text-sm">
             Tem certeza que deseja excluir{' '}
-            <span className="text-[#c0d8d6] font-medium">"{showDelete?.name}"</span>? Todos os documentos e conversas serão
+            <span className="text-foreground font-medium">"{showDelete?.name}"</span>? Todos os documentos e conversas serão
             removidos permanentemente.
           </p>
           <DialogFooter>

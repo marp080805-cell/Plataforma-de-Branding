@@ -37,7 +37,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
   });
 
   return (
-    <div className="min-h-screen bg-[#080d0d]">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <Header />
       <ProjectClient
         project={{

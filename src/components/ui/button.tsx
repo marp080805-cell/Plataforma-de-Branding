@@ -9,16 +9,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-[#176968] text-white hover:bg-[#1d8584] shadow-[0_0_0_1px_rgba(23,105,104,0.3),0_1px_3px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(23,105,104,0.22),0_0_0_1px_rgba(23,105,104,0.45)]',
+          'bg-primary text-white hover:bg-primary/90 shadow-[0_0_0_1px_rgba(23,105,104,0.3),0_1px_3px_rgba(0,0,0,0.2)] hover:shadow-[0_0_20px_rgba(23,105,104,0.22),0_0_0_1px_rgba(23,105,104,0.45)]',
         destructive:
-          'bg-[#c93030] text-white hover:bg-[#d94040] shadow-[0_0_0_1px_rgba(201,48,48,0.3)]',
+          'bg-destructive text-white hover:bg-destructive/90 shadow-[0_0_0_1px_rgba(201,48,48,0.3)]',
         outline:
-          'border border-white/[0.1] bg-white/[0.04] text-[#b8d0ce] hover:bg-white/[0.08] hover:border-white/[0.18] hover:text-[#dceeed]',
+          'border border-border/60 bg-card text-foreground hover:bg-muted/50 hover:border-border hover:text-foreground',
         secondary:
-          'bg-white/[0.06] text-[#a8c0be] hover:bg-white/[0.1] hover:text-[#d0e8e7]',
+          'bg-muted/50 text-foreground hover:bg-muted hover:text-foreground',
         ghost:
-          'text-[#6a9492] hover:bg-white/[0.06] hover:text-[#b8d0ce]',
-        link: 'text-[#76A095] underline-offset-4 hover:underline hover:text-[#A5BBAB]',
+          'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+        link: 'text-accent underline-offset-4 hover:underline hover:text-secondary',
       },
       size: {
         default: 'h-9 px-4 py-2',

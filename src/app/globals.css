@@ -3,36 +3,72 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Brand palette:
-       #D5D7C2 – bege claro
-       #161616 – quase preto
+  /* ── LIGHT THEME (default) ──────────────────────────────────
+     Palette:
+       #D5D7C2 – bege claro       (background)
+       #161616 – quase preto      (foreground)
        #000000 – preto
-       #A5BBAB – verde-sage claro
-       #76A095 – verde-sage médio
-       #47847E – verde-teal
-       #176968 – teal profundo (Pantone 4165 C) */
-
+       #A5BBAB – verde-sage claro (muted)
+       #76A095 – verde-sage médio (accent)
+       #47847E – verde-teal       (secondary)
+       #176968 – teal profundo    (primary / Pantone 4165 C)
+  ─────────────────────────────────────────────────────────── */
+  :root {
     --background: 66 15% 80%;          /* #D5D7C2 */
     --foreground: 0 0% 9%;             /* #161616 */
-    --card: 66 15% 84%;
+    --card: 66 20% 90%;                /* lighter beige card */
     --card-foreground: 0 0% 9%;
-    --popover: 66 15% 84%;
+    --popover: 66 20% 93%;
     --popover-foreground: 0 0% 9%;
     --primary: 179 64% 25%;            /* #176968 */
     --primary-foreground: 0 0% 100%;
     --secondary: 175 30% 40%;          /* #47847E */
     --secondary-foreground: 0 0% 100%;
-    --muted: 136 11% 69%;              /* #A5BBAB */
-    --muted-foreground: 0 0% 20%;
+    --muted: 168 20% 85%;
+    --muted-foreground: 0 0% 30%;
     --accent: 168 17% 55%;             /* #76A095 */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 70% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 168 17% 55%;             /* #76A095 */
+    --border: 168 17% 65%;
     --input: 66 15% 73%;
     --ring: 179 64% 25%;               /* #176968 */
     --radius: 0.75rem;
+
+    /* Surface extras */
+    --surface-1: 66 18% 87%;
+    --surface-2: 66 20% 92%;
+    --surface-hover: 168 15% 78%;
+    --header-bg: 66 15% 77%;
+  }
+
+  /* ── DARK THEME ─────────────────────────────────────────── */
+  .dark {
+    --background: 174 45% 4%;          /* #060d0c ≈ #080d0d */
+    --foreground: 174 30% 88%;         /* #d0eceb ≈ #e0f0ef */
+    --card: 174 38% 7%;                /* #0c1817 ≈ #0d1515 */
+    --card-foreground: 174 30% 88%;
+    --popover: 174 38% 8%;
+    --popover-foreground: 174 30% 88%;
+    --primary: 179 64% 25%;            /* #176968 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 175 30% 40%;          /* #47847E */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 174 30% 12%;
+    --muted-foreground: 174 15% 52%;   /* #6a9490 */
+    --accent: 168 17% 55%;             /* #76A095 */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 174 30% 13%;
+    --input: 174 38% 8%;
+    --ring: 179 64% 25%;
+
+    /* Surface extras */
+    --surface-1: 174 35% 9%;
+    --surface-2: 174 30% 11%;
+    --surface-hover: 174 30% 14%;
+    --header-bg: 174 45% 3.5%;
   }
 }
 
@@ -69,8 +105,11 @@
   background: rgba(23, 105, 104, 0.25);
   color: #161616;
 }
+.dark ::selection {
+  color: #D5D7C2;
+}
 
-/* ─── Markdown content (dark bg – agent bubbles) ────────────── */
+/* ─── Markdown content (always dark bg – agent bubbles) ─────── */
 .markdown-content {
   @apply text-sm leading-relaxed;
 }
@@ -196,6 +235,10 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(71, 132, 126, 0.2);
 }
+.dark .glass {
+  background: rgba(13, 21, 21, 0.75);
+  border: 1px solid rgba(71, 132, 126, 0.15);
+}
 
 /* ─── Gradient text ─────────────────────────────────────────── */
 .gradient-text {
@@ -221,3 +264,7 @@
   animation: shimmer 2s linear infinite;
   border-radius: var(--radius);
 }
+
+/* ─── Theme-aware surface classes ───────────────────────────── */
+.surface-1 { background: hsl(var(--surface-1)); }
+.surface-2 { background: hsl(var(--surface-2)); }

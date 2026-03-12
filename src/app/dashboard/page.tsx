@@ -14,7 +14,7 @@ export default async function DashboardPage() {
   const missingApiKey = !settings?.anthropicApiKey && !settings?.openaiApiKey;
 
   return (
-    <div className="min-h-screen bg-[#080810]">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {missingApiKey && session.user.role === 'admin' && (
