@@ -132,6 +132,8 @@ export async function POST(req: NextRequest) {
   let fullResponse = '';
   let inputTokens = 0;
   let outputTokens = 0;
+  let cacheCreationTokens = 0; // Anthropic only: tokens written to cache
+  let cacheReadTokens = 0;     // Anthropic: cache hits | OpenAI: cached subset of inputTokens
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -161,7 +163,14 @@ export async function POST(req: NextRequest) {
 
           for await (const chunk of anthropicStream) {
             if (chunk.type === 'message_start') {
-              inputTokens = chunk.message.usage?.input_tokens || 0;
+              const u = chunk.message.usage as {
+                input_tokens?: number;
+                cache_creation_input_tokens?: number;
+                cache_read_input_tokens?: number;
+              };
+              inputTokens         = u.input_tokens                  || 0;
+              cacheCreationTokens = u.cache_creation_input_tokens   || 0;
+              cacheReadTokens     = u.cache_read_input_tokens       || 0;
             }
             if (chunk.type === 'message_delta' && 'usage' in chunk) {
               outputTokens = (chunk as { usage?: { output_tokens?: number } }).usage?.output_tokens || 0;
@@ -194,9 +203,14 @@ export async function POST(req: NextRequest) {
                 send(event.delta);
               }
               if (event.type === 'response.completed') {
-                const usage = (event as { response?: { usage?: { input_tokens?: number; output_tokens?: number } } }).response?.usage;
-                inputTokens = usage?.input_tokens || 0;
-                outputTokens = usage?.output_tokens || 0;
+                const usage = (event as { response?: { usage?: {
+                  input_tokens?: number;
+                  output_tokens?: number;
+                  input_tokens_details?: { cached_tokens?: number };
+                } } }).response?.usage;
+                inputTokens     = usage?.input_tokens || 0;
+                outputTokens    = usage?.output_tokens || 0;
+                cacheReadTokens = usage?.input_tokens_details?.cached_tokens || 0;
               }
             }
           } else {
@@ -219,26 +233,36 @@ export async function POST(req: NextRequest) {
                 send(content);
               }
               if (chunk.usage) {
-                inputTokens = chunk.usage.prompt_tokens || 0;
-                outputTokens = chunk.usage.completion_tokens || 0;
+                inputTokens     = chunk.usage.prompt_tokens || 0;
+                outputTokens    = chunk.usage.completion_tokens || 0;
+                cacheReadTokens = (chunk.usage as { prompt_tokens_details?: { cached_tokens?: number } })
+                  .prompt_tokens_details?.cached_tokens || 0;
               }
             }
           }
         }
 
-        // Save assistant response with token counts and cost at this point in time
+        // Save assistant response with token counts and exact cost at this point in time
         if (fullResponse) {
           const totalTokens = inputTokens + outputTokens;
-          const cost = calculateCost(conversation.agent.model, inputTokens, outputTokens);
+          const cost = calculateCost(
+            conversation.agent.model,
+            inputTokens,
+            outputTokens,
+            cacheCreationTokens,
+            cacheReadTokens,
+          );
           await prisma.message.create({
             data: {
               role: 'assistant',
               content: fullResponse,
               conversationId,
-              inputTokens: inputTokens || null,
-              outputTokens: outputTokens || null,
-              tokenCount: totalTokens || null,
-              cost: cost || null,
+              inputTokens:         inputTokens         || null,
+              outputTokens:        outputTokens        || null,
+              tokenCount:          totalTokens         || null,
+              cacheCreationTokens: cacheCreationTokens || null,
+              cacheReadTokens:     cacheReadTokens     || null,
+              cost:                cost                || null,
             },
           });
         }

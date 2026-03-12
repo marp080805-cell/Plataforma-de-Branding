@@ -135,10 +135,12 @@ model Message {
   id             String       @id @default(cuid())
   role           String
   content        String
-  tokenCount     Int?
-  inputTokens    Int?
-  outputTokens   Int?
-  cost           Float?
+  tokenCount          Int?
+  inputTokens         Int?
+  outputTokens        Int?
+  cacheCreationTokens Int?
+  cacheReadTokens     Int?
+  cost                Float?
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   userId         String?
